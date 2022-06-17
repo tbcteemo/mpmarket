@@ -23,6 +23,6 @@ public class CouponRule {
     private Long id;
 
     private String ruleName;        //规则的名称
-    private Long ruleNumber;        //规则类型的编号，见上面。
+    private Integer ruleNumber;        //规则类型的编号，见上面。
     private String description;
 }

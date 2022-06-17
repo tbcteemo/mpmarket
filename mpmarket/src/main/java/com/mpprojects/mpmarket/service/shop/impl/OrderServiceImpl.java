@@ -20,7 +20,7 @@ import com.mpprojects.mpmarket.model.users.User;
 import com.mpprojects.mpmarket.service.shop.OrderService;
 import com.mpprojects.mpmarket.service.shop.impl.utils.CalculateMethodsForCouponRule;
 import com.mpprojects.mpmarket.service.users.UserService;
-import com.mpprojects.mpmarket.service.users.impl.UserServiceImpl;
+import com.mpprojects.mpmarket.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -99,7 +99,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
 
     @Override
     //传入用户id进行结算的方法，优惠券和vip判定的代码块在内部。
-    public String createOrder(Long userId) {
+    public Response createOrder(Long userId) {
 
         //1.new一个order对象，并指定其userId；
         UserOrder userOrder = new UserOrder();
@@ -146,7 +146,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         //余额判定的逻辑，余额不足则报错充值，余额够则扣费；
         User usernow = userMapper.selectById(userId);
         BigDecimal moneynow = usernow.getMoney();
-        if (moneynow.compareTo(finalPrice) < 0){return "余额不满足，请充值或选择其他支付方式";}
+        if (moneynow.compareTo(finalPrice) < 0){
+            return new Response("1002","余额不足，请充值");
+        }
         usernow.setMoney(moneynow.subtract(finalPrice));
         userMapper.updateById(usernow);
         userOrder.setStatus(1);
@@ -161,14 +163,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         Long cartid = cartMapper.selectOne(cartidWrapper).getId();
         cartProductMapper.deleteSelected(cartid);
 
-        return "订单创建且扣费成功，余额：" + userMapper.selectById(userId).getMoney().toString()
-                +"原价：" + tp + "成交价：" + finalPrice;
+        return new Response("200",
+                "订单创建且扣费成功，余额：" + userMapper.selectById(userId).getMoney().toString() +
+                "原价：" + tp + "成交价：" + finalPrice);
 
     }
 
     /** 此方法是传入用户id和一个优惠券的id进行结算。优惠券若不存在则按照原价计算*/
     @Override
-    public String createOrder2(Long userid, Long couponid) {
+    public Response createOrder2(Long userid, Long couponid) {
         //1.new一个order对象，并指定其userId；
         UserOrder userOrder = new UserOrder();
         userOrder.setUserId(userid);
@@ -215,7 +218,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         User usernow = userMapper.selectById(userid);
         BigDecimal moneynow = usernow.getMoney();
         if (moneynow.compareTo(finalPrice) < 0){
-            return "余额不满足，请充值或选择其他支付方式";
+            return new Response("1002","余额不足，请充值");
         }
         usernow.setMoney(moneynow.subtract(finalPrice));
         userMapper.updateById(usernow);
@@ -232,12 +235,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         Long cartid = cartMapper.selectOne(cartidWrapper).getId();
         cartProductMapper.deleteSelected(cartid);
 
-        return "优惠券订单创建且扣费成功，余额：" + userMapper.selectById(userid).getMoney().toString()
-                +"原价：" + tp + "成交价：" + finalPrice;
+        return new Response("200","优惠券订单创建且扣费成功，余额：" + userMapper.selectById(userid).getMoney().toString()
+                +"原价：" + tp + "成交价：" + finalPrice);
     }
 
     @Override
-    public String createOrder3(Long userid) {
+    public Response createOrder3(Long userid) {
         //1.new一个order对象，并获得其userId；
         UserOrder userOrder = new UserOrder();
         userOrder.setUserId(userid);
@@ -261,7 +264,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         User usernow = userMapper.selectById(userid);
         BigDecimal moneynow = usernow.getMoney();
         if (moneynow.compareTo(finalPrice) < 0){
-            return "余额不满足，请充值或选择其他支付方式";
+            return new Response("1002","余额不足，请充值");
         }
         usernow.setMoney(moneynow.subtract(finalPrice));
         userMapper.updateById(usernow);
@@ -278,15 +281,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         Long cartid = cartMapper.selectOne(cartidWrapper).getId();
         cartProductMapper.deleteSelected(cartid);
 
-        return "无优惠券订单创建且扣费成功，余额：" + userMapper.selectById(userid).getMoney().toString()
-                +"原价：" + tp + "成交价：" + finalPrice;
+        return new Response("200","无优惠券订单创建且扣费成功，余额：" + userMapper.selectById(userid).getMoney().toString()
+                +"原价：" + tp + "成交价：" + finalPrice);
     }
 
 
 
     /** 此方法是根据会员统一折扣A和商品单独折扣B进行结算的，仅适用于全局规则(规则编号：3)的优惠券。*/
     @Override
-    public String createOrderRule3(Long userid, Long couponid) {
+    public Response createOrderRule3(Long userid, Long couponid) {
         //1.new一个order对象，并获得其userId；
         UserOrder userOrder = new UserOrder();
         userOrder.setUserId(userid);
@@ -324,7 +327,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         User user = userMapper.selectById(userid);
         BigDecimal money = user.getMoney();
         if (money.compareTo(finalPrice) < 0){
-            return "余额不足，请充值";
+            return new Response("1002","余额不足，请充值");
         }else{
             //订单能够结算，则进行金额及更新数据库等收尾操作
             user.setMoney(money.subtract(finalPrice));
@@ -343,14 +346,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
             Long cartid = cartMapper.selectOne(cartidWrapper).getId();
             cartProductMapper.deleteSelected(cartid);
 
-            return "订单创建成功，最终成交额：" + finalPrice + "时间：" + timenow.toString();
+            return new Response("200","订单创建成功，最终成交额：" + finalPrice + "时间：" + timenow.toString());
         }
 
     }
 
     /** 此方法适用于：白名单规则；规则码：1 */
     @Override
-    public String createOrderRule1(Long userid, Long couponid) {
+    public Response createOrderRule1(Long userid, Long couponid) {
         //1.new一个order对象，并获得其userId；
         UserOrder userOrder = new UserOrder();
         userOrder.setUserId(userid);
@@ -406,7 +409,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         User user = userMapper.selectById(userid);
         BigDecimal money = user.getMoney();
         if (money.compareTo(finalPrice) < 0){
-            return "余额不足，请充值";
+            return new Response("1002","余额不足，请充值");
         }else{
             //订单能够结算，则进行金额及更新数据库等收尾操作
             user.setMoney(money.subtract(finalPrice));
@@ -426,14 +429,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
             Long cartid = cartMapper.selectOne(cartidWrapper).getId();
             cartProductMapper.deleteSelected(cartid);
 
-            return "订单创建成功，最终成交额：" + finalPrice + "时间：" + timenow.toString();
+            return new Response("200","订单创建成功，最终成交额：" + finalPrice + "时间：" + timenow.toString());
         }
 
     }
 
     /** 此方法适用于：黑名单规则；规则码：2 */
     @Override
-    public String createOrderRule2(Long userid, Long couponid) {
+    public Response createOrderRule2(Long userid, Long couponid) {
         //1.new一个order对象，并获得其userId；
         UserOrder userOrder = new UserOrder();
         userOrder.setUserId(userid);
@@ -486,7 +489,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         User user = userMapper.selectById(userid);
         BigDecimal money = user.getMoney();
         if (money.compareTo(finalPrice) < 0){
-            return "余额不足，请充值";
+            return new Response("1002","余额不足，请充值");
         }else{
             //订单能够结算，则进行金额及更新数据库等收尾操作
             user.setMoney(money.subtract(finalPrice));
@@ -506,13 +509,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
             Long cartid = cartMapper.selectOne(cartidWrapper).getId();
             cartProductMapper.deleteSelected(cartid);
 
-            return "订单创建成功，最终成交额：" + finalPrice + "时间：" + timenow.toString();
+            return new Response("200","订单创建成功，最终成交额：" + finalPrice + "时间：" + timenow.toString());
         }
     }
 
     /** 此方法适用：按品类使用规则；规则码：4。即：类别id在列表中的商品才能用。 */
     @Override
-    public String createOrderRule4(Long userid, Long couponid) {
+    public Response createOrderRule4(Long userid, Long couponid) {
         //1.new一个order对象，并获得其userId；
         UserOrder userOrder = new UserOrder();
         userOrder.setUserId(userid);
@@ -527,7 +530,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         BigDecimal finalPrice = new BigDecimal(0);
         Coupon coupon = couponMapper.selectById(couponid);
         if (couponRuleMapper.selectById(coupon.getRuleId()).getRuleNumber() != 4){
-            return "优惠券使用范围错误，请重新选择优惠券。";
+            return new Response("1002","优惠券使用范围错误，请重新选择优惠券。");
         }
         long ruleid = coupon.getRuleId();
 
@@ -567,7 +570,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         User user = userMapper.selectById(userid);
         BigDecimal money = user.getMoney();
         if (money.compareTo(finalPrice) < 0){
-            return "余额不足，请充值";
+            return new Response("1002","余额不足，请充值");
         }else{
             //订单能够结算，则进行金额及更新数据库等收尾操作
             user.setMoney(money.subtract(finalPrice));
@@ -587,7 +590,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
             Long cartid = cartMapper.selectOne(cartidWrapper).getId();
             cartProductMapper.deleteSelected(cartid);
 
-            return "订单创建成功，最终成交额：" + finalPrice + "时间：" + timenow.toString();
+            return new Response("200","订单创建成功，最终成交额：" + finalPrice + "时间：" + timenow.toString());
         }
 
     }

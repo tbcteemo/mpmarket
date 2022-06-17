@@ -22,6 +22,7 @@ import com.mpprojects.mpmarket.service.shop.impl.OrderServiceImpl;
 import com.mpprojects.mpmarket.service.shop.impl.OrderServiceImpl;
 
 
+import com.mpprojects.mpmarket.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,18 +47,18 @@ public class OrderController {
     private CouponRuleMapper couponRuleMapper;
 
     @PostMapping("/add")
-    public String createOrder(@RequestParam Long userId){
+    public Response createOrder(@RequestParam Long userId){
         return orderService.createOrder(userId);
     }
 
     @PostMapping("/add2")
-    public String createOrder2(@RequestParam Long userid,
+    public Response createOrder2(@RequestParam Long userid,
                                @RequestParam Long couponid){
         return orderService.createOrder2(userid, couponid);
     }
 
     @PostMapping("/add3")
-    public String createOrder3(@RequestParam Long userid){
+    public Response createOrder3(@RequestParam Long userid){
         return orderService.createOrder3(userid);
     }
 
@@ -88,23 +89,21 @@ public class OrderController {
 
     /** 此方法是加入了优惠券使用规则之后的统一结算接口 */
     @PostMapping("/unitedSettle")
-    public String unitedSettle(@RequestParam Long userid,
+    public Response unitedSettle(@RequestParam Long userid,
                                @RequestParam Long couponid){
         CouponRule rule = couponRuleMapper.selectById(couponMapper.selectById(couponid).getRuleId());
-        Long type = rule.getRuleNumber();
-        if (type == 1){
-            return orderService.createOrderRule1(userid,couponid);
-        }
-        if (type == 2){
-            return orderService.createOrderRule2(userid,couponid);
-        }
-        if (type == 3){
-            return orderService.createOrderRule3(userid,couponid);
-        }
-        if (type == 4){
-            return orderService.createOrderRule4(userid,couponid);
-        }else{
-            return "无对应规则的计算方法";
+        Integer type = rule.getRuleNumber();
+        switch (type){
+            case 1:
+                return orderService.createOrderRule1(userid,couponid);
+            case 2:
+                return orderService.createOrderRule2(userid,couponid);
+            case 3:
+                return orderService.createOrderRule3(userid,couponid);
+            case 4:
+                return orderService.createOrderRule4(userid,couponid);
+            default:
+                return new Response("1002","无对应规则的计算方法");
         }
     }
 }

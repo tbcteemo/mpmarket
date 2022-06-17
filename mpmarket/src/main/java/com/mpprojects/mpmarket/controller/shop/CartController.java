@@ -6,6 +6,7 @@ import com.mpprojects.mpmarket.dao.shop.CartMapper;
 import com.mpprojects.mpmarket.model.shop.Cart;
 import com.mpprojects.mpmarket.model.shop.CartShow;
 import com.mpprojects.mpmarket.model.shop.relationship.CartProduct;
+import com.mpprojects.mpmarket.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,47 +25,39 @@ public class CartController {
 
     /** 创建购物车 */
     @PostMapping("/add")
-    public Cart add(@RequestParam long userId){
+    public Response<Cart> add(@RequestParam long userId){
         Cart cart = new Cart();
         cart.setUserId(userId);
 //        cart.setCreateTime(System.currentTimeMillis());
 //        cart.setLastUpdateTime(System.currentTimeMillis());
         cartMapper.insert(cart);
-        return cart;
+        return new Response<Cart>("200","添加购物车成功",cart);
     }
-
-//    @DeleteMapping("/delete")
-//    public String delete(@RequestParam long id){
-//        cartMapper.deleteById(id);
-//        return "目标购物车删除成功";
-//    }
-
-//    @PutMapping("/update")
-//    public String update(Cart cart){
-//        cartMapper.updateById(cart);
-//        return "修改完毕";
-//    }
 
     /** 当前用户购物车展示 */
     @GetMapping("/show")
-    public Cart getByUserId(@RequestParam long userid){
+    public Response<Cart> getByUserId(@RequestParam long userid){
         QueryWrapper<Cart> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id",userid);
-        return cartMapper.selectOne(queryWrapper);
+        return new Response<>("200","根据用户id选择其购物车成功",cartMapper.selectOne(queryWrapper));
     }
 
     /** 添加商品到购物车*/
     @PostMapping("/addproduct")
-    public BigDecimal addProduct(@RequestBody CartProduct cartProduct){
+    public Response<BigDecimal> addProduct(@RequestBody CartProduct cartProduct){
         cartProductMapper.insert(cartProduct);
-        return cartProductMapper.preCal();
+        return new Response<>("200",
+                "添加商品到购物车成功，目前预计总价：" + cartProductMapper.preCal().toString(),
+                cartProductMapper.preCal());
     }
 
     /** 勾选购物车商品，将返回预结算总价，且更新中间表isSelected属性 */
     @PutMapping("/selected")
-    public BigDecimal updateSelectedProduct(@RequestBody CartProduct cartProduct){
+    public Response<BigDecimal> updateSelectedProduct(@RequestBody CartProduct cartProduct){
         cartProductMapper.updateById(cartProduct);
-        return cartProductMapper.preCal();
+        return new Response<>("200",
+                "根据勾选的商品预算总价为" + cartProductMapper.preCal().toString(),
+                cartProductMapper.preCal());
     }
 
 //    /**展示购物车内的详情，本质是返回中间表的所有对象*/

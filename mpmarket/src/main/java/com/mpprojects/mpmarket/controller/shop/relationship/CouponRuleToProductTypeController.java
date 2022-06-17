@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mpprojects.mpmarket.dao.relationships.CouponRuleToProductTypeMapper;
 import com.mpprojects.mpmarket.model.shop.relationship.CouponRuleToProductType;
+import com.mpprojects.mpmarket.utils.Response;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -16,26 +17,29 @@ public class CouponRuleToProductTypeController {
     private CouponRuleToProductTypeMapper couponRuleToProductTypeMapper;
 
     @PostMapping("/add")
-    public String add(@RequestBody CouponRuleToProductType couponRuleToProductType){
+    public Response add(@RequestBody CouponRuleToProductType couponRuleToProductType){
         couponRuleToProductTypeMapper.insert(couponRuleToProductType);
-        return "规则与商品类目关联成功，记录id为：" + couponRuleToProductType.getId().toString();
+        return new Response("200",
+                "规则与商品类目关联成功，记录id为：" + couponRuleToProductType.getId().toString());
     }
 
     @DeleteMapping("/delete")
-    public String add(@RequestParam long id){
+    public Response add(@RequestParam long id){
         couponRuleToProductTypeMapper.deleteById(id);
-        return "删除成功";
+        return new Response("200","根据id删除成功");
     }
 
     @PutMapping("/update")
-    public String update(@RequestBody CouponRuleToProductType couponRuleToProductType){
+    public Response update(@RequestBody CouponRuleToProductType couponRuleToProductType){
         couponRuleToProductTypeMapper.updateById(couponRuleToProductType);
-        return "修改成功，该条记录id为" + couponRuleToProductType.getId().toString();
+        return new Response("200","修改成功，该条关联表记录id为" + couponRuleToProductType.getId().toString());
     }
 
     @GetMapping("/getOne")
-    public CouponRuleToProductType getone(@RequestParam long id){
-        return couponRuleToProductTypeMapper.selectById(id);
+    public Response<CouponRuleToProductType> getone(@RequestParam long id){
+        return new Response<>("200",
+                "根据主键id选择优惠券规则与商品的关联记录成功",
+                couponRuleToProductTypeMapper.selectById(id));
     }
 
     @GetMapping("/pageAll")

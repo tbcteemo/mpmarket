@@ -24,7 +24,7 @@ public class CouponController {
 
     //创建一个优惠券实体。
     @PostMapping("/add")
-    public String add(@RequestBody Coupon coupon){
+    public Response add(@RequestBody Coupon coupon){
 
         //判定是否为相同的优惠券
         Coupon coupon1 = couponMapper.selectSameCoupon(coupon.getSaleoff(),
@@ -34,34 +34,34 @@ public class CouponController {
                 coupon.getIsVipOnly());
 
         if (coupon1 != null){
-            return "该优惠券已存在";
+            return new Response("1003","该优惠券已存在");
         }
         couponMapper.insert(coupon);
-        return "添加优惠券成功";
+        return new Response("200","添加优惠券成功");
     }
 
     //删除一条优惠券记录
     @DeleteMapping("/delete")
-    public String delete(@RequestParam Long id){
+    public Response delete(@RequestParam Long id){
         couponMapper.deleteById(id);
-        return "删除优惠券成功";
+        return new Response("200","删除优惠券成功");
     }
 
     //修改一条优惠券
     @PutMapping("/put")
-    public String update(@RequestBody Coupon coupon){
+    public Response update(@RequestBody Coupon coupon){
         Coupon coupon1 = couponMapper.selectById(coupon.getId());
         if (coupon1 == null){
-            return "id不存在或优惠券记录不存在，请检查id或者转到添加页面";
+            return new Response("1002","id不存在或优惠券记录不存在，请检查id或者转到添加页面");
         }
         couponMapper.updateById(coupon);
-        return "修改优惠券内容成功，优惠券id为："+coupon.getId().toString();
+        return new Response("200","修改优惠券内容成功，优惠券id为："+coupon.getId().toString());
     }
 
     //获取一条优惠券记录
     @GetMapping("/get")
-    public Coupon get(@RequestParam Long id){
-        return couponMapper.selectById(id);
+    public Response<Coupon> get(@RequestParam Long id){
+        return new Response<>("200","根据id获取优惠券对象成功",couponMapper.selectById(id));
     }
 
     //下发优惠券

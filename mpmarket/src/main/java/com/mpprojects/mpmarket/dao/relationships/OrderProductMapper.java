@@ -10,7 +10,7 @@ import java.util.List;
 
 @Mapper
 public interface OrderProductMapper extends BaseMapper<OrderProduct> {
-    public BigDecimal totalPrice(@Param("orderid")Long orderid);
+    BigDecimal totalPrice(@Param("orderid")Long orderid);
     List<OrderProduct> selectAll(@Param("orderid")Long orderid);
     Integer getProductCount(@Param("orderid") long orderid,
                         @Param("productid") long productid);

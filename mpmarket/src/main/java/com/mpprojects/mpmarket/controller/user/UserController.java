@@ -14,6 +14,7 @@ import com.mpprojects.mpmarket.model.users.UserRole;
 import com.mpprojects.mpmarket.model.users.relationship.UserToRole;
 import com.mpprojects.mpmarket.service.users.UserService;
 import com.mpprojects.mpmarket.service.users.impl.UserServiceImpl;
+import com.mpprojects.mpmarket.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -41,11 +42,11 @@ public class UserController {
     private UserCouponMapper userCouponMapper;
 
     @PostMapping("/add")
-    public String addUser(@RequestParam String name,
-                          @RequestParam String password,
-                          @RequestParam String email,
-                          @RequestParam String mobile,
-                          @RequestParam String role){
+    public Response addUser(@RequestParam String name,
+                            @RequestParam String password,
+                            @RequestParam String email,
+                            @RequestParam String mobile,
+                            @RequestParam String role){
 
         QueryWrapper<User> queryWrapper1 = new QueryWrapper();
         QueryWrapper<User> queryWrapper2 = new QueryWrapper();
@@ -83,38 +84,38 @@ public class UserController {
                     userToRole.setRoleId(userRole.getId());
                     userToRoleMapper.insert(userToRole);
 
-                    return "用户创建成功";
+                    return new Response("200","用户创建成功");
                 }
-                return "mobile已存在";
+                return new Response("1003","mobile已存在");
             }
-            return "email已存在";
+            return new Response("1003","email已存在");
         }
-        return "用户名已存在";
+        return new Response("1003","用户名已存在");
     }
 
     @DeleteMapping("/delete")
-    public String deleteById(@RequestParam long id){
+    public Response deleteById(@RequestParam long id){
         User user = userMapper.selectById(id);
         if (user != null) {
             userMapper.deleteById(id);
-            return "已删除指定用户";
+            return new Response("200","已根据删除指定用户");
         }
-        return "此用户不存在";
+        return new Response("1004","此用户不存在");
     }
 
     @PutMapping("/update")
-    public String updateUser(@RequestBody User user){
+    public Response updateUser(@RequestBody User user){
         if (user.getMoney() != null){
-            return "涉及余额修改，修改非法！";
+            return new Response("1002","涉及余额修改，修改非法！");
         }
         userMapper.updateById(user);
-        return "更改成功";
+        return new Response("200","更改成功");
     }
 
-    @GetMapping("/show")
-    public User showUser(@RequestParam long id){
+    @GetMapping("/get")
+    public Response<User> getUser(@RequestParam long id){
         User user = userMapper.selectById(id);
-        return user;
+        return new Response<>("200","根据id选择User成功",user);
     }
 
     @GetMapping("/page")
@@ -125,25 +126,25 @@ public class UserController {
 
     /** VIP的金额充值 */
     @PutMapping("/recharge")
-    public String recharge(@RequestParam Long userid,
+    public Response recharge(@RequestParam Long userid,
                             @RequestParam BigDecimal income){
         Boolean isvip = userService.hasVip(userid);
         if (isvip == false){
-            return "非VIP不允许充值，请使用其他支付方式";
+            return new Response("1002","非VIP不允许充值，请使用其他支付方式");
         }
         User oldUser = userMapper.selectById(userid);
         oldUser.setMoney(oldUser.getMoney().add(income));
         userMapper.updateById(oldUser);
-        return "金额充值成功,余额："+userMapper.selectById(userid).getMoney().toString();
+        return new Response("200","金额充值成功,余额："+userMapper.selectById(userid).getMoney().toString());
     }
 
     @PutMapping("/updateselectcoupon")
-    public String updateSelectCoupon(@RequestParam Long userid,
+    public Response updateSelectCoupon(@RequestParam Long userid,
                                @RequestParam Long couponid,
                                 @RequestParam Boolean isselect){
         UserCoupon userCoupon = userCouponMapper.selectByUserIdAndCouponId(userid,couponid);
         userCoupon.setIsSelect(isselect);
         userCouponMapper.updateById(userCoupon);
-        return "此优惠券状态为：" + isselect.toString();
+        return new Response("200","此优惠券状态为：" + isselect.toString());
     }
 }

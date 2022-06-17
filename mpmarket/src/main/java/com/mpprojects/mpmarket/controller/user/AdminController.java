@@ -12,6 +12,7 @@ import com.mpprojects.mpmarket.model.users.AdminRole;
 import com.mpprojects.mpmarket.model.users.User;
 import com.mpprojects.mpmarket.model.users.UserAndCouponShow;
 import com.mpprojects.mpmarket.model.users.relationship.AdminToRole;
+import com.mpprojects.mpmarket.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -35,10 +36,10 @@ public class AdminController {
     private UserMapper userMapper;
 
     @PostMapping("/add")
-    public String addAdmin(@RequestParam String name,
-                           @RequestParam String password,
-                           @RequestParam String email,
-                           @RequestParam String role){
+    public Response addAdmin(@RequestParam String name,
+                             @RequestParam String password,
+                             @RequestParam String email,
+                             @RequestParam String role){
 
         QueryWrapper<Admin> queryWrapper1 = new QueryWrapper();
         QueryWrapper<Admin> queryWrapper2 = new QueryWrapper();
@@ -72,33 +73,33 @@ public class AdminController {
                     adminToRole.setRoleId(adminRole.getId());
                     adminToRoleMapper.insert(adminToRole);
 
-                    return "用户创建成功";
+                    return new Response("200","用户创建成功");
             }
-            return "email已存在";
+            return new Response("1002","email已存在");
         }
-        return "用户名已存在";
+        return new Response("1002","用户名已存在");
     }
 
     @DeleteMapping("/delete")
-    public String deleteById(@RequestParam long id){
+    public Response deleteById(@RequestParam long id){
         Admin admin = adminMapper.selectById(id);
         if (admin != null) {
             adminMapper.deleteById(id);
-            return "已删除指定用户";
+            return new Response("200","已删除指定用户");
         }
-        return "此用户不存在";
+        return new Response("1004","此用户不存在");
     }
 
     @PutMapping("/update")
-    public String updateUser(@RequestBody Admin admin){
+    public Response updateUser(@RequestBody Admin admin){
         adminMapper.updateById(admin);
-        return "更改成功";
+        return new Response("200","更改成功");
     }
 
     @GetMapping("/show")
-    public Admin showUser(@RequestParam long id){
+    public Response<Admin> showUser(@RequestParam long id){
         Admin admin = adminMapper.selectById(id);
-        return admin;
+        return new Response<>("200","根据id选取管理员成功",admin);
     }
 
     @GetMapping("/showall")

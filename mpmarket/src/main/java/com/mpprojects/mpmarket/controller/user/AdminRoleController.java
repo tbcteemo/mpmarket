@@ -4,6 +4,7 @@ import com.mpprojects.mpmarket.dao.relationships.AdminRoleToPermissionMapper;
 import com.mpprojects.mpmarket.dao.users.AdminRoleMapper;
 import com.mpprojects.mpmarket.model.users.AdminRole;
 import com.mpprojects.mpmarket.model.users.relationship.AdminRoleToPermission;
+import com.mpprojects.mpmarket.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,8 +25,8 @@ public class AdminRoleController {
 
     /** 这个方法在在添加user的角色role的时候，会要求传入对应的permissionId，同时生成role-permission的关联记录*/
     @PostMapping("/add")
-    public String add(@RequestParam String name,
-                      @RequestParam Long permissionId){
+    public Response add(@RequestParam String name,
+                        @RequestParam Long permissionId){
         //根据传入的name生成admin的role记录；
         AdminRole role = new AdminRole();
         role.setAdminRoleName(name);
@@ -35,6 +36,6 @@ public class AdminRoleController {
         adminRoleToPermission.setAdminRoleId(role.getId());
         adminRoleToPermission.setAdminPermissionId(permissionId);
         adminRoleToPermissionMapper.insert(adminRoleToPermission);
-        return "添加成功" + role.getId().toString();
+        return new Response("200","关联管理员和权限成功" + role.getId().toString());
     }
 }
