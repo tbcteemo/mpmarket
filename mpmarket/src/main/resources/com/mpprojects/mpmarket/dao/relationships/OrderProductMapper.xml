@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mpprojects.mpmarket.dao.relationships.OrderProductMapper">
+
+<!--    传入订单id预算总价金额返回，已淘汰-->
+    <select id="totalPrice" resultType="BigDecimal">
+        select sum(product_price * product_count) from order_product where order_id = #{orderid};
+    </select>
+
+<!--    根据订单id获取订单中所有的和商品的关联记录-->
+    <select id="selectAll" resultType="com.mpprojects.mpmarket.model.shop.relationship.OrderProduct">
+        select product_id from order_product where order_id = #{orderid};
+    </select>
+
+<!--    根据订单id和商品id获得该商品在此订单中的数量-->
+    <select id="getProductCount" resultType="Integer">
+        select product_count
+        from order_product
+        where order_id = #{orderid}
+          and product_id = #{productid};
+    </select>
+</mapper>

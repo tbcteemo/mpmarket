@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mpprojects.mpmarket.dao.shop.OrderMapper">
+
+<!--    根据用户id，列出其所有订单及详情-->
+    <select id="listAllOrders" resultType="com.mpprojects.mpmarket.model.shop.OrderShow">
+        select a.id as user_id , a.uname as user_name ,
+                b.product_id , b.product_name ,
+                c.product_count , c.product_price,
+                d.total_price , d.order_time,
+                (c.product_count * c.product_price) as single_price
+        from `user` a join user_order d on a.id = d.user_id
+            join order_product c on d.id = c.order_id
+            join product b on b.id = c.product_id
+        where a.id = #{userid};
+    </select>
+
+<!--    传入订单号，列出该订单的所有详情-->
+    <select id="listOneOrder" resultType="com.mpprojects.mpmarket.model.shop.OrderShow">
+        select a.id as user_id , a.uname as user_name ,
+                b.product_id , b.product_name ,
+                c.product_count , c.product_price,
+                d.total_price , d.order_time
+        from `user` a join user_order d on a.id = d.user_id
+            join order_product c on d.id = c.order_id
+            join product b on b.id = c.product_id
+        where d.id = #{orderid};
+    </select>
+
+<!--    传入orderid，返回有商品单独折扣的总价。用户角色：Vip;适用优惠券规则：全局可使用-->
+    <select id="priceOfVipHaveProductDiscount" resultType="BigDecimal">
+        select sum (b.product_count * c.price * c.discount/10) as have_discount_total_price
+        from user_order a
+            join order_product b on a.id = b.order_id
+            join product c on b.product_id = c.id
+        where b.order_id = #{orderid}
+          and c.discount != 10;
+    </select>
+
+    <!--    传入orderid，返回有商品单独折扣的总价。用户角色：User;适用优惠券规则：全局可使用-->
+    <select id="priceOfUserHaveProductDiscount" resultType="BigDecimal">
+        select sum (b.product_count * c.price) as have_discount_total_price
+        from user_order a
+                 join order_product b on a.id = b.order_id
+                 join product c on b.product_id = c.id
+        where b.order_id = #{orderid}
+          and c.discount != 10;
+    </select>
+
+    <!--    传入orderid，返回无商品单独折扣的总价。适用优惠券规则：全局可使用-->
+    <select id="priceOfNoProductDiscount" resultType="BigDecimal">
+        select sum (b.product_count * c.price) as no_discount_total_price
+        from user_order a
+                 join order_product b on a.id = b.order_id
+                 join product c on b.product_id = c.id
+        where b.order_id = #{orderid}
+          and c.discount = 10;
+    </select>
+
+<!--    选择在规则名单中,有单独折扣的商品-->
+    <select id="getProductsInListWithDiscount" resultType="com.mpprojects.mpmarket.model.shop.Product">
+        select b.id , b.sn , b.pname , b.description , b.price , b.unit ,
+               b.format_id , b.stock , b.discount , b.type_number
+        from order_product a
+            join product b on a.product_id = b.id
+            join coupon_rule_to_product c on c.product_id = b.id
+        where a.order_id = #{orderid}
+          and b.discount != 10
+          and c.rule_id = #{ruleid};
+    </select>
+
+<!--    选择在规则名单中,没有单独折扣的商品-->
+    <select id="getProductsInListWithoutDiscount" resultType="com.mpprojects.mpmarket.model.shop.Product">
+        select b.id , b.sn , b.pname , b.description , b.price , b.unit ,
+               b.format_id , b.stock , b.discount , b.type_number
+        from order_product a
+                 join product b on a.product_id = b.id
+                 join coupon_rule_to_product c on c.product_id = b.id
+        where a.order_id = #{orderid}
+          and b.discount = 10
+          and c.rule_id = #{ruleid};
+    </select>
+
+    <!--    选择没有在规则名单中,有单独折扣的商品-->
+    <select id="getProductsNotInListWithDiscount" resultType="com.mpprojects.mpmarket.model.shop.Product">
+        select b.id , b.sn , b.pname , b.description , b.price , b.unit ,
+               b.format_id , b.stock , b.discount , b.type_number
+        from order_product a
+                 join product b on a.product_id = b.id
+                 join coupon_rule_to_product c on c.product_id = b.id
+        where a.order_id = #{orderid}
+          and b.discount != 10
+          and c.rule_id != #{ruleid};
+    </select>
+
+    <!--    选择没在规则名单中,没有单独折扣的商品-->
+    <select id="getProductsNotInListWithoutDiscount" resultType="com.mpprojects.mpmarket.model.shop.Product">
+        select b.id , b.sn , b.pname , b.description , b.price , b.unit ,
+               b.format_id , b.stock , b.discount , b.type_number
+        from order_product a
+                 join product b on a.product_id = b.id
+                 join coupon_rule_to_product c on c.product_id = b.id
+        where a.order_id = #{orderid}
+          and b.discount = 10
+          and c.rule_id != #{ruleid};
+    </select>
+
+    <!--    选择符合类别号，有单独折扣的商品-->
+    <select id="getProductsInTypeWithDiscount" resultType="com.mpprojects.mpmarket.model.shop.Product">
+        select b.id , b.sn , b.pname , b.description , b.price , b.unit ,
+               b.format_id , b.stock , b.discount , b.type_number
+        from order_product a
+                 join product b on a.product_id = b.id
+                 join coupon_rule_to_product_type c on b.type_id = c.type_id
+        where a.order_id = #{orderid}
+          and b.discount != 10
+          and b.rule_id = #{rule_id};
+    </select>
+
+    <!--    选择符合类别号，没有单独折扣的商品-->
+    <select id="getProductsInTypeWithoutDiscount" resultType="com.mpprojects.mpmarket.model.shop.Product">
+        select b.id , b.sn , b.pname , b.description , b.price , b.unit ,
+               b.format_id , b.stock , b.discount , b.type_number
+        from order_product a
+                 join product b on a.product_id = b.id
+                 join coupon_rule_to_product_type c on b.type_id = c.type_id
+        where a.order_id = #{orderid}
+          and b.discount = 10
+          and b.rule_id = #{rule_id};
+    </select>
+
+    <!--    选择不符合类别号，有单独折扣的商品-->
+    <select id="getProductsNotInTypeWithDiscount" resultType="com.mpprojects.mpmarket.model.shop.Product">
+        select b.id , b.sn , b.pname , b.description , b.price , b.unit ,
+               b.format_id , b.stock , b.discount , b.type_number
+        from order_product a
+                 join product b on a.product_id = b.id
+                 join coupon_rule_to_product_type c on b.type_id = c.type_id
+        where a.order_id = #{orderid}
+          and b.discount != 10
+          and b.rule_id != #{rule_id};
+    </select>
+
+    <!--    选择不符合类别号，没有单独折扣的商品-->
+    <select id="getProductsNotInTypeWithoutDiscount" resultType="com.mpprojects.mpmarket.model.shop.Product">
+        select b.id , b.sn , b.pname , b.description , b.price , b.unit ,
+               b.format_id , b.stock , b.discount , b.type_number
+        from order_product a
+                 join product b on a.product_id = b.id
+                 join coupon_rule_to_product_type c on b.type_id = c.type_id
+        where a.order_id = #{orderid}
+          and b.discount = 10
+          and b.rule_id != #{rule_id};
+    </select>
+
+</mapper>

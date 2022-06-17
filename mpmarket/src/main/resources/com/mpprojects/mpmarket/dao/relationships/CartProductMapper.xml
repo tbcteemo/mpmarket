@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mpprojects.mpmarket.dao.relationships.CartProductMapper">
+
+<!--    传入用户id，获取购物车中已经选择的所有商品-->
+    <select id="getSelectedProducts" resultType="com.mpprojects.mpmarket.model.shop.relationship.CartProduct">
+        select product_id , product_count , is_selected
+        from cart a join cart_product b
+            on a.id = b.cart_id
+        where a.user_id = #{userid}
+          and b.is_selected = true;
+    </select>
+
+<!--    <select id="preCal" resultType="BigDecimal">-->
+<!--        select sum(b.product_count * c.price) as total_price-->
+<!--        from cart a join cart_product b on a.id = b.cart_id-->
+<!--                    join product c on b.product_id = c.id-->
+<!--        where a.user_id = #{userId} and b.is_selected = true;-->
+<!--    </select>-->
+
+<!--    此方法是用于预先算出订单总价（根据购物车中勾选的商品种类统计计算），但是没有考虑商品单独的优惠价的，仅是原价-->
+    <select id="preCal" resultType="BigDecimal">
+        select sum(b.product_count * c.price) as total_price
+        from cart_product b
+        join product c on b.product_id = c.id
+        where b.is_selected = true;
+    </select>
+
+    <select id="selectAll" resultType="com.mpprojects.mpmarket.model.shop.relationship.CartProduct">
+        select * from cart_product where cart_id = #{cartid};
+    </select>
+
+    <delete id="deleteSelected">
+        delete from cart_product
+        where cart_id = #{cartid}
+          and is_selected = true;
+    </delete>
+
+    <select id="showDetails" resultType="com.mpprojects.mpmarket.model.shop.CartShow">
+        select c.pname,c.format_id,d.format_value,c.unit,b.product_count,c.price,b.product_count * c.price as st_price
+        from cart a
+            join cart_product b on a.id = b.cart_id
+            join product c on b.product_id = c.id
+            join product_format d on c.format_id = d.id
+        where a.user_id = #{userid};
+    </select>
+
+    <!--    选择要结算的商品中，没有单独折扣的部分，并计算总价-->
+    <select id="preCalPriceWithoutProductDiscount" resultType="BigDecimal">
+        select sum(b.product_count * c.price) as total_price
+        from cart_product b
+                 join product c on b.product_id = c.id
+        where b.is_selected = true
+          and c.discount = 10
+          and b.cart_id = #{cartid};
+    </select>
+
+    <!--    选择要结算的商品中，有商品单独折扣的部分，乘以了商品特有的折扣并计算总价-->
+    <select id="preCalPriceWithProductDiscount" resultType="BigDecimal">
+        select sum(b.product_count * c.price * c.discount / 10) as total_price
+        from cart_product b
+                 join product c on b.product_id = c.id
+        where b.is_selected = true
+          and b.cart_id = #{cartid}
+          and c.discount != 10;
+    </select>
+
+</mapper>

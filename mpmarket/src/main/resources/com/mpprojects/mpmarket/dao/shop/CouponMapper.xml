@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mpprojects.mpmarket.dao.shop.CouponMapper">
+    <select id="selectSameCoupon" resultType="com.mpprojects.mpmarket.model.shop.Coupon">
+        select *
+        from coupon
+        where saleoff = #{saleoff}
+            and start_price = #{startPrice}
+            and start_time = #{startTime}
+            and end_time = #{endTime}
+            and is_vip_only = #{isVipOnly}
+            ;
+    </select>
+
+    <select id="getSelectedCoupon" resultType="com.mpprojects.mpmarket.model.shop.Coupon">
+        select saleoff , start_price , start_time , end_time , is_vip_only
+        from user_coupon a join coupon b on a.coupon_id = b.id
+        where a.user_id = #{userid}
+            and a.is_select = true
+            and a.is_enable = true;
+    </select>
+
+</mapper>
