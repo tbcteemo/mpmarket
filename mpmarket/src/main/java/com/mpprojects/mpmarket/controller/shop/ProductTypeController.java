@@ -3,13 +3,11 @@ package com.mpprojects.mpmarket.controller.shop;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mpprojects.mpmarket.dao.shop.ProductTypeMapper;
-import com.mpprojects.mpmarket.model.shop.Product;
 import com.mpprojects.mpmarket.model.shop.ProductType;
 import com.mpprojects.mpmarket.utils.Response;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 @RestController
 @RequestMapping("/productType")

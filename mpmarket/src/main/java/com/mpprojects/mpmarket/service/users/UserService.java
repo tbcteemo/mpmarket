@@ -6,7 +6,7 @@ import com.mpprojects.mpmarket.model.users.User;
 import java.math.BigDecimal;
 
 public interface UserService extends IService<User> {
-    Boolean hasVip(Long userid);
+    Boolean isVip(Long userid);
     BigDecimal settleVip(BigDecimal tp);
     BigDecimal settleUser(BigDecimal tp);
 }

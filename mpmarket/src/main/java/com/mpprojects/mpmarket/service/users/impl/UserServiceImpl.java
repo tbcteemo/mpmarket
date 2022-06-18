@@ -1,11 +1,7 @@
 package com.mpprojects.mpmarket.service.users.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.mpprojects.mpmarket.dao.shop.OrderMapper;
 import com.mpprojects.mpmarket.dao.users.UserMapper;
-import com.mpprojects.mpmarket.model.shop.Cart;
-import com.mpprojects.mpmarket.model.shop.UserOrder;
 import com.mpprojects.mpmarket.model.users.User;
 import com.mpprojects.mpmarket.model.users.relationship.UserToRole;
 import com.mpprojects.mpmarket.service.users.UserService;
@@ -21,11 +17,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     private UserMapper userMapper;
 
-    @Resource
-    private OrderMapper orderMapper;
-
     @Override
-    public Boolean hasVip(Long userid) {
+    public Boolean isVip(Long userid) {
         UserToRole role = userMapper.selectVipRelation(userid);
         if (role == null){
             return Boolean.FALSE;

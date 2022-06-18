@@ -10,15 +10,16 @@ import com.mpprojects.mpmarket.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 
 @Service
 public class CouponServiceImpl extends ServiceImpl<CouponMapper, Coupon> implements CouponService {
 
-    @Autowired
+    @Resource
     private CouponMapper couponMapper;
 
-    @Autowired
+    @Resource
     private UserCouponMapper userCouponMapper;
 
     @Override
@@ -28,7 +29,8 @@ public class CouponServiceImpl extends ServiceImpl<CouponMapper, Coupon> impleme
                 coupon.getStartPrice(),
                 coupon.getStartTime(),
                 coupon.getEndTime(),
-                coupon.getIsVipOnly());
+                coupon.getIsVipOnly(),
+                coupon.getRuleId());
 
         if (coupon1 != null){
             return true;

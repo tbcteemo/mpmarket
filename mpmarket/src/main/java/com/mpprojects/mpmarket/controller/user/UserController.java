@@ -20,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 @RestController
@@ -128,7 +129,7 @@ public class UserController {
     @PutMapping("/recharge")
     public Response recharge(@RequestParam Long userid,
                             @RequestParam BigDecimal income){
-        Boolean isvip = userService.hasVip(userid);
+        Boolean isvip = userService.isVip(userid);
         if (isvip == false){
             return new Response("1002","非VIP不允许充值，请使用其他支付方式");
         }
@@ -147,4 +148,15 @@ public class UserController {
         userCouponMapper.updateById(userCoupon);
         return new Response("200","此优惠券状态为：" + isselect.toString());
     }
+
+    @GetMapping("/testisvip")
+    public boolean isvip(@RequestParam long userid){
+       return userService.isVip(userid);
+    }
+
+    @GetMapping("/selectviprelation")
+    public UserToRole select(@RequestParam long userid){
+        return userMapper.selectVipRelation(userid);
+    }
+
 }

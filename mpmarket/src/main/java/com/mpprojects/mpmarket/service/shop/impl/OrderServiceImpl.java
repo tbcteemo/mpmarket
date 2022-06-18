@@ -21,8 +21,10 @@ import com.mpprojects.mpmarket.service.shop.OrderService;
 import com.mpprojects.mpmarket.service.shop.impl.utils.CalculateMethodsForCouponRule;
 import com.mpprojects.mpmarket.service.users.UserService;
 import com.mpprojects.mpmarket.utils.Response;
+import com.mpprojects.mpmarket.utils.SettlementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -30,6 +32,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implements OrderService {
 
     @Autowired
@@ -99,7 +102,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
 
     @Override
     //传入用户id进行结算的方法，优惠券和vip判定的代码块在内部。
-    public Response createOrder(Long userId) {
+    public Response createOrder(Long userId) throws SettlementException {
 
         //1.new一个order对象，并指定其userId；
         UserOrder userOrder = new UserOrder();
@@ -116,7 +119,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         LocalDateTime timenow = LocalDateTime.now();
 
         //这一层if判断是判定是否是vip,vip和普通用户有各自的计算和打折逻辑，所以要分别。最后得出一个最终价格finalPrice
-        if (userService.hasVip(userId) == Boolean.TRUE){
+        if (userService.isVip(userId) == Boolean.TRUE){
             //viptp是原价tp进行VIP专用的打折算法算出来之后的打折后总价。
             BigDecimal viptp = userService.settleVip(tp);
             Coupon coupon = couponMapper.getSelectedCoupon(userId);
@@ -147,7 +150,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         User usernow = userMapper.selectById(userId);
         BigDecimal moneynow = usernow.getMoney();
         if (moneynow.compareTo(finalPrice) < 0){
-            return new Response("1002","余额不足，请充值");
+            throw new SettlementException("余额不足");
         }
         usernow.setMoney(moneynow.subtract(finalPrice));
         userMapper.updateById(usernow);
@@ -171,7 +174,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
 
     /** 此方法是传入用户id和一个优惠券的id进行结算。优惠券若不存在则按照原价计算*/
     @Override
-    public Response createOrder2(Long userid, Long couponid) {
+    public Response createOrder2(Long userid, Long couponid) throws SettlementException{
         //1.new一个order对象，并指定其userId；
         UserOrder userOrder = new UserOrder();
         userOrder.setUserId(userid);
@@ -186,7 +189,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         BigDecimal finalPrice = tp;
         LocalDateTime timenow = LocalDateTime.now();
 
-        if (userService.hasVip(userid) == Boolean.TRUE){
+        if (userService.isVip(userid) == Boolean.TRUE){
             //viptp是原价tp进行VIP专用的打折算法算出来之后的打折后总价。
             BigDecimal viptp = userService.settleVip(tp);
             Coupon coupon = couponMapper.selectById(couponid);
@@ -218,7 +221,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         User usernow = userMapper.selectById(userid);
         BigDecimal moneynow = usernow.getMoney();
         if (moneynow.compareTo(finalPrice) < 0){
-            return new Response("1002","余额不足，请充值");
+            throw new SettlementException("余额不足");
         }
         usernow.setMoney(moneynow.subtract(finalPrice));
         userMapper.updateById(usernow);
@@ -240,7 +243,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
     }
 
     @Override
-    public Response createOrder3(Long userid) {
+    public Response createOrder3(Long userid) throws SettlementException{
         //1.new一个order对象，并获得其userId；
         UserOrder userOrder = new UserOrder();
         userOrder.setUserId(userid);
@@ -255,7 +258,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         BigDecimal finalPrice = tp;
         LocalDateTime timenow = LocalDateTime.now();
 
-        if (userService.hasVip(userid) == Boolean.TRUE){
+        if (userService.isVip(userid) == Boolean.TRUE){
             finalPrice = userService.settleVip(tp);
         }else{
             finalPrice = userService.settleUser(tp);
@@ -264,7 +267,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         User usernow = userMapper.selectById(userid);
         BigDecimal moneynow = usernow.getMoney();
         if (moneynow.compareTo(finalPrice) < 0){
-            return new Response("1002","余额不足，请充值");
+            throw new SettlementException("余额不足");
         }
         usernow.setMoney(moneynow.subtract(finalPrice));
         userMapper.updateById(usernow);
@@ -289,7 +292,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
 
     /** 此方法是根据会员统一折扣A和商品单独折扣B进行结算的，仅适用于全局规则(规则编号：3)的优惠券。*/
     @Override
-    public Response createOrderRule3(Long userid, Long couponid) {
+    public Response createOrderRule3(Long userid, Long couponid) throws SettlementException{
         //1.new一个order对象，并获得其userId；
         UserOrder userOrder = new UserOrder();
         userOrder.setUserId(userid);
@@ -302,7 +305,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
 
         //3.进行vip身份判定,并根据不同的身份调用不同的价格算法。
         BigDecimal price = new BigDecimal(0);
-        if (userService.hasVip(userid) == true){
+        if (userService.isVip(userid) == true){
             price = calculateMethodsForCouponRule.calVipPrice(orderid);
         }else{
             price = calculateMethodsForCouponRule.calUserPrice(orderid);
@@ -327,7 +330,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         User user = userMapper.selectById(userid);
         BigDecimal money = user.getMoney();
         if (money.compareTo(finalPrice) < 0){
-            return new Response("1002","余额不足，请充值");
+            throw new SettlementException("余额不足");
         }else{
             //订单能够结算，则进行金额及更新数据库等收尾操作
             user.setMoney(money.subtract(finalPrice));
@@ -353,7 +356,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
 
     /** 此方法适用于：白名单规则；规则码：1 */
     @Override
-    public Response createOrderRule1(Long userid, Long couponid) {
+    public Response createOrderRule1(Long userid, Long couponid) throws SettlementException{
         //1.new一个order对象，并获得其userId；
         UserOrder userOrder = new UserOrder();
         userOrder.setUserId(userid);
@@ -369,7 +372,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         Coupon coupon = couponMapper.selectById(couponid);
         long ruleid = coupon.getRuleId();
 
-        if (userService.hasVip(userid) == true){
+        if (userService.isVip(userid) == true){
             //p1是计算了商品单独折扣的金额，所以不用调用settleVip方法使用Vip专属折扣。P3同。
             BigDecimal p1 = calculateMethodsForCouponRule.calP1Vip(orderid,ruleid);
             //p2是没有单独折扣的商品价格总和，因此需要进行vip固定折扣打折。P4同。
@@ -409,7 +412,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         User user = userMapper.selectById(userid);
         BigDecimal money = user.getMoney();
         if (money.compareTo(finalPrice) < 0){
-            return new Response("1002","余额不足，请充值");
+            throw new SettlementException("余额不足");
         }else{
             //订单能够结算，则进行金额及更新数据库等收尾操作
             user.setMoney(money.subtract(finalPrice));
@@ -436,7 +439,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
 
     /** 此方法适用于：黑名单规则；规则码：2 */
     @Override
-    public Response createOrderRule2(Long userid, Long couponid) {
+    public Response createOrderRule2(Long userid, Long couponid) throws SettlementException{
         //1.new一个order对象，并获得其userId；
         UserOrder userOrder = new UserOrder();
         userOrder.setUserId(userid);
@@ -452,7 +455,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         Coupon coupon = couponMapper.selectById(couponid);
         long ruleid = coupon.getRuleId();
 
-        if (userService.hasVip(userid) == true){
+        if (userService.isVip(userid) == true){
             //会员的计算
             //p1是计算了商品单独折扣的金额，所以不用调用settleVip方法使用Vip专属折扣。P3同。
             BigDecimal p1 = calculateMethodsForCouponRule.calP1Vip(orderid,ruleid);
@@ -489,7 +492,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         User user = userMapper.selectById(userid);
         BigDecimal money = user.getMoney();
         if (money.compareTo(finalPrice) < 0){
-            return new Response("1002","余额不足，请充值");
+            throw new SettlementException("余额不足");
         }else{
             //订单能够结算，则进行金额及更新数据库等收尾操作
             user.setMoney(money.subtract(finalPrice));
@@ -515,7 +518,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
 
     /** 此方法适用：按品类使用规则；规则码：4。即：类别id在列表中的商品才能用。 */
     @Override
-    public Response createOrderRule4(Long userid, Long couponid) {
+    public Response createOrderRule4(Long userid, Long couponid) throws SettlementException{
         //1.new一个order对象，并获得其userId；
         UserOrder userOrder = new UserOrder();
         userOrder.setUserId(userid);
@@ -530,11 +533,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         BigDecimal finalPrice = new BigDecimal(0);
         Coupon coupon = couponMapper.selectById(couponid);
         if (couponRuleMapper.selectById(coupon.getRuleId()).getRuleNumber() != 4){
-            return new Response("1002","优惠券使用范围错误，请重新选择优惠券。");
+            throw new SettlementException("优惠券使用范围错误，请重新选择");
         }
         long ruleid = coupon.getRuleId();
 
-        if (userService.hasVip(userid) == true){
+        if (userService.isVip(userid) == true){
             //p1是计算了商品单独折扣的金额，所以不用调用settleVip方法使用Vip专属折扣。P3同。
             BigDecimal p1 = calculateMethodsForCouponRule.calP1VipForType(orderid,ruleid);
             //p2是没有单独折扣的商品价格总和，因此需要进行vip固定折扣打折。P4同。
@@ -570,7 +573,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         User user = userMapper.selectById(userid);
         BigDecimal money = user.getMoney();
         if (money.compareTo(finalPrice) < 0){
-            return new Response("1002","余额不足，请充值");
+            throw new SettlementException("余额不足");
         }else{
             //订单能够结算，则进行金额及更新数据库等收尾操作
             user.setMoney(money.subtract(finalPrice));

@@ -10,6 +10,7 @@
             and start_time = #{startTime}
             and end_time = #{endTime}
             and is_vip_only = #{isVipOnly}
+            and rule_id = #{ruleId}
             ;
     </select>
 

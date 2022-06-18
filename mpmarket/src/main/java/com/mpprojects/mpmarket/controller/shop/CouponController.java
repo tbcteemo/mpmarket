@@ -1,7 +1,9 @@
 package com.mpprojects.mpmarket.controller.shop;
 
+import com.mpprojects.mpmarket.dao.relationships.UserCouponMapper;
 import com.mpprojects.mpmarket.dao.shop.CouponMapper;
 import com.mpprojects.mpmarket.model.shop.Coupon;
+import com.mpprojects.mpmarket.model.shop.relationship.UserCoupon;
 import com.mpprojects.mpmarket.service.shop.CouponService;
 import com.mpprojects.mpmarket.service.users.UserService;
 import com.mpprojects.mpmarket.utils.Response;
@@ -22,16 +24,20 @@ public class CouponController {
     @Resource
     private UserService userService;
 
-    //创建一个优惠券实体。
+    @Resource
+    private UserCouponMapper userCouponMapper;
+
+//    创建一个优惠券实体。
     @PostMapping("/add")
     public Response add(@RequestBody Coupon coupon){
 
-        //判定是否为相同的优惠券
+//        判定是否为相同的优惠券
         Coupon coupon1 = couponMapper.selectSameCoupon(coupon.getSaleoff(),
                 coupon.getStartPrice(),
                 coupon.getStartTime(),
                 coupon.getEndTime(),
-                coupon.getIsVipOnly());
+                coupon.getIsVipOnly(),
+                coupon.getRuleId());
 
         if (coupon1 != null){
             return new Response("1003","该优惠券已存在");
@@ -66,14 +72,28 @@ public class CouponController {
 
     //下发优惠券
     @PostMapping("/givecoupon")
-    public Response givecoupon(@RequestParam Long userid,
-                               @RequestBody Coupon coupon){
+    public Response<UserCoupon> givecoupon(@RequestParam Long userid,
+                               @RequestParam Long couponid){
+        Coupon coupon = couponMapper.selectById(couponid);
+        UserCoupon userCoupon = new UserCoupon();
         if (coupon.getIsVipOnly() == true){
-            if (userService.hasVip(userid) != true){
+            Boolean isVip = userService.isVip(userid);
+            if (isVip == false){
                 return new Response("1002","此优惠券为vip专属，用户角色不匹配！",null);
+            }else{
+                userCoupon.setUserId(userid);
+                userCoupon.setCouponId(couponid);
+                userCoupon.setIsEnable(true);
+                userCouponMapper.insert(userCoupon);
+                return new Response("200","优惠券发放成功",userCoupon);
             }
+        }else {
+            userCoupon.setUserId(userid);
+            userCoupon.setCouponId(couponid);
+            userCoupon.setIsEnable(true);
+            userCouponMapper.insert(userCoupon);
+            return new Response("200","优惠券发放成功",userCoupon);
         }
-        return couponService.giveCoupon(userid, coupon);
     }
 
 

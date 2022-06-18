@@ -15,7 +15,8 @@ public interface CouponMapper extends BaseMapper<Coupon> {
                              @Param("startPrice") BigDecimal startPrice,
                              @Param("startTime") LocalDateTime startTime,
                              @Param("endTime") LocalDateTime endTime,
-                             @Param("isVipOnly") Boolean isVipOnly);
+                             @Param("isVipOnly") Boolean isVipOnly,
+                            @Param("ruleId") Long ruleId);
 
     Coupon getSelectedCoupon(@Param("userid") Long userid);
 
