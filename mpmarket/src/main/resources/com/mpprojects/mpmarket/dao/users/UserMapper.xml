@@ -20,7 +20,7 @@
     </select>
     
     <select id="selectVipAndHisUnusedCoupon" resultType="com.mpprojects.mpmarket.model.users.UserAndCouponShow">
-        select a.id as user_id, a.money , a.uname , a.password , a.email , a.mobile , a.description
+        select a.id as user_id, a.money , a.uname , a.password , a.email , a.mobile , a.description ,
             e.id as coupon_id , e.saleoff , e.start_price ,
             e.create_time , e.start_time , e.end_time , e.is_vip_only
         from `user` a
@@ -30,5 +30,19 @@
                 join coupon e on d.coupon_id = e.id
         where c.user_role_name = 'vip'
           and d.is_enable = true ;
+    </select>
+
+    <select id="selectOneVipAndHisUnusedCoupon" resultType="com.mpprojects.mpmarket.model.users.UserAndCouponShow">
+        select a.id as user_id, a.money , a.uname , a.password , a.email , a.mobile , a.description ,
+               e.id as coupon_id , e.saleoff , e.start_price ,
+               e.create_time , e.start_time , e.end_time , e.is_vip_only
+        from `user` a
+                 join user_to_role b on a.id = b.user_id
+                 join user_role c on b.role_id = c.id
+                 join user_coupon d on a.id = d.user_id
+                 join coupon e on d.coupon_id = e.id
+        where c.user_role_name = 'vip'
+          and d.is_enable = true
+          and a.id = #{userid};
     </select>
 </mapper>

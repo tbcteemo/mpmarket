@@ -10,6 +10,7 @@ import com.mpprojects.mpmarket.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -17,10 +18,10 @@ import java.util.List;
 @RequestMapping("/cart")
 public class CartController {
 
-    @Autowired
+    @Resource
     private CartMapper cartMapper;
 
-    @Autowired
+    @Resource
     private CartProductMapper cartProductMapper;
 
     /** 创建购物车 */
@@ -47,8 +48,8 @@ public class CartController {
     public Response<BigDecimal> addProduct(@RequestBody CartProduct cartProduct){
         cartProductMapper.insert(cartProduct);
         return new Response<>("200",
-                "添加商品到购物车成功，目前预计总价：" + cartProductMapper.preCal().toString(),
-                cartProductMapper.preCal());
+                "添加商品到购物车成功，目前预计总价：" + cartProductMapper.preCal(cartProduct.getCartId()).toString(),
+                cartProductMapper.preCal(cartProduct.getCartId()));
     }
 
     /** 勾选购物车商品，将返回预结算总价，且更新中间表isSelected属性 */
@@ -56,8 +57,8 @@ public class CartController {
     public Response<BigDecimal> updateSelectedProduct(@RequestBody CartProduct cartProduct){
         cartProductMapper.updateById(cartProduct);
         return new Response<>("200",
-                "根据勾选的商品预算总价为" + cartProductMapper.preCal().toString(),
-                cartProductMapper.preCal());
+                "根据勾选的商品预算总价为" + cartProductMapper.preCal(cartProduct.getCartId()).toString(),
+                cartProductMapper.preCal(cartProduct.getCartId()));
     }
 
 //    /**展示购物车内的详情，本质是返回中间表的所有对象*/

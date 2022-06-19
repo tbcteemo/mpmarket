@@ -4,6 +4,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.mpprojects.mpmarket.model.users.AdminPermission;
 import org.apache.ibatis.annotations.Mapper;
 
-@Mapper
 public interface AdminPermissionMapper extends BaseMapper<AdminPermission> {
 }

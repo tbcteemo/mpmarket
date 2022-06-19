@@ -8,7 +8,6 @@ import org.apache.ibatis.annotations.Param;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Mapper
 public interface OrderProductMapper extends BaseMapper<OrderProduct> {
     BigDecimal totalPrice(@Param("orderid")Long orderid);
     List<OrderProduct> selectAll(@Param("orderid")Long orderid);

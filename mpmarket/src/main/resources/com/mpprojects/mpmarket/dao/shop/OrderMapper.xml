@@ -29,8 +29,8 @@
     </select>
 
 <!--    传入orderid，返回有商品单独折扣的总价。用户角色：Vip;适用优惠券规则：全局可使用-->
-    <select id="priceOfVipHaveProductDiscount" resultType="BigDecimal">
-        select sum (b.product_count * c.price * c.discount/10) as have_discount_total_price
+    <select id="priceOfVipHaveProductDiscount" resultType="java.math.BigDecimal">
+        select sum(b.product_count * c.price * c.discount/10) as have_discount_total_price
         from user_order a
             join order_product b on a.id = b.order_id
             join product c on b.product_id = c.id
@@ -39,8 +39,8 @@
     </select>
 
     <!--    传入orderid，返回有商品单独折扣的总价。用户角色：User;适用优惠券规则：全局可使用-->
-    <select id="priceOfUserHaveProductDiscount" resultType="BigDecimal">
-        select sum (b.product_count * c.price) as have_discount_total_price
+    <select id="priceOfUserHaveProductDiscount" resultType="java.math.BigDecimal">
+        select sum(b.product_count * c.price) as have_discount_total_price
         from user_order a
                  join order_product b on a.id = b.order_id
                  join product c on b.product_id = c.id
@@ -49,8 +49,8 @@
     </select>
 
     <!--    传入orderid，返回无商品单独折扣的总价。适用优惠券规则：全局可使用-->
-    <select id="priceOfNoProductDiscount" resultType="BigDecimal">
-        select sum (b.product_count * c.price) as no_discount_total_price
+    <select id="priceOfNoProductDiscount" resultType="java.math.BigDecimal">
+        select sum(b.product_count * c.price) as no_discount_total_price
         from user_order a
                  join order_product b on a.id = b.order_id
                  join product c on b.product_id = c.id
@@ -61,7 +61,7 @@
 <!--    选择在规则名单中,有单独折扣的商品-->
     <select id="getProductsInListWithDiscount" resultType="com.mpprojects.mpmarket.model.shop.Product">
         select b.id , b.sn , b.pname , b.description , b.price , b.unit ,
-               b.format_id , b.stock , b.discount , b.type_number
+               b.format_id , b.stock , b.discount , b.type_id
         from order_product a
             join product b on a.product_id = b.id
             join coupon_rule_to_product c on c.product_id = b.id
@@ -73,7 +73,7 @@
 <!--    选择在规则名单中,没有单独折扣的商品-->
     <select id="getProductsInListWithoutDiscount" resultType="com.mpprojects.mpmarket.model.shop.Product">
         select b.id , b.sn , b.pname , b.description , b.price , b.unit ,
-               b.format_id , b.stock , b.discount , b.type_number
+               b.format_id , b.stock , b.discount , b.type_id
         from order_product a
                  join product b on a.product_id = b.id
                  join coupon_rule_to_product c on c.product_id = b.id
@@ -85,7 +85,7 @@
     <!--    选择没有在规则名单中,有单独折扣的商品-->
     <select id="getProductsNotInListWithDiscount" resultType="com.mpprojects.mpmarket.model.shop.Product">
         select b.id , b.sn , b.pname , b.description , b.price , b.unit ,
-               b.format_id , b.stock , b.discount , b.type_number
+               b.format_id , b.stock , b.discount , b.type_id
         from order_product a
                  join product b on a.product_id = b.id
                  join coupon_rule_to_product c on c.product_id = b.id
@@ -97,7 +97,7 @@
     <!--    选择没在规则名单中,没有单独折扣的商品-->
     <select id="getProductsNotInListWithoutDiscount" resultType="com.mpprojects.mpmarket.model.shop.Product">
         select b.id , b.sn , b.pname , b.description , b.price , b.unit ,
-               b.format_id , b.stock , b.discount , b.type_number
+               b.format_id , b.stock , b.discount , b.type_id
         from order_product a
                  join product b on a.product_id = b.id
                  join coupon_rule_to_product c on c.product_id = b.id
@@ -109,49 +109,49 @@
     <!--    选择符合类别号，有单独折扣的商品-->
     <select id="getProductsInTypeWithDiscount" resultType="com.mpprojects.mpmarket.model.shop.Product">
         select b.id , b.sn , b.pname , b.description , b.price , b.unit ,
-               b.format_id , b.stock , b.discount , b.type_number
+               b.format_id , b.stock , b.discount , b.type_id
         from order_product a
                  join product b on a.product_id = b.id
                  join coupon_rule_to_product_type c on b.type_id = c.type_id
         where a.order_id = #{orderid}
           and b.discount != 10
-          and b.rule_id = #{rule_id};
+          and c.rule_id = #{rule_id};
     </select>
 
     <!--    选择符合类别号，没有单独折扣的商品-->
     <select id="getProductsInTypeWithoutDiscount" resultType="com.mpprojects.mpmarket.model.shop.Product">
         select b.id , b.sn , b.pname , b.description , b.price , b.unit ,
-               b.format_id , b.stock , b.discount , b.type_number
+               b.format_id , b.stock , b.discount , b.type_id
         from order_product a
                  join product b on a.product_id = b.id
                  join coupon_rule_to_product_type c on b.type_id = c.type_id
         where a.order_id = #{orderid}
           and b.discount = 10
-          and b.rule_id = #{rule_id};
+          and c.rule_id = #{rule_id};
     </select>
 
     <!--    选择不符合类别号，有单独折扣的商品-->
     <select id="getProductsNotInTypeWithDiscount" resultType="com.mpprojects.mpmarket.model.shop.Product">
         select b.id , b.sn , b.pname , b.description , b.price , b.unit ,
-               b.format_id , b.stock , b.discount , b.type_number
+               b.format_id , b.stock , b.discount , b.type_id
         from order_product a
                  join product b on a.product_id = b.id
                  join coupon_rule_to_product_type c on b.type_id = c.type_id
         where a.order_id = #{orderid}
           and b.discount != 10
-          and b.rule_id != #{rule_id};
+          and c.rule_id != #{rule_id};
     </select>
 
     <!--    选择不符合类别号，没有单独折扣的商品-->
     <select id="getProductsNotInTypeWithoutDiscount" resultType="com.mpprojects.mpmarket.model.shop.Product">
         select b.id , b.sn , b.pname , b.description , b.price , b.unit ,
-               b.format_id , b.stock , b.discount , b.type_number
+               b.format_id , b.stock , b.discount , b.type_id
         from order_product a
                  join product b on a.product_id = b.id
                  join coupon_rule_to_product_type c on b.type_id = c.type_id
         where a.order_id = #{orderid}
           and b.discount = 10
-          and b.rule_id != #{rule_id};
+          and c.rule_id != #{rule_id};
     </select>
 
 </mapper>

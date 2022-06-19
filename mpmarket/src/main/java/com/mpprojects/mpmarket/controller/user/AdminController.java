@@ -17,22 +17,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
 
-    @Autowired
+    @Resource
     private AdminRoleMapper adminRoleMapper;
 
-    @Autowired
+    @Resource
     private AdminToRoleMapper adminToRoleMapper;
 
-    @Autowired
+    @Resource
     private AdminMapper adminMapper;
 
-    @Autowired
+    @Resource
     private UserMapper userMapper;
 
     @PostMapping("/add")

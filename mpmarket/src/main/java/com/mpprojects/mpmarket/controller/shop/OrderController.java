@@ -34,10 +34,10 @@ import java.util.List;
 @RequestMapping("/order")
 public class OrderController {
 
-    @Autowired
+    @Resource
     private OrderMapper orderMapper;
 
-    @Autowired
+    @Resource
     private OrderService orderService;
 
     @Resource

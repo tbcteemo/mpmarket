@@ -8,7 +8,6 @@ import org.apache.ibatis.annotations.Param;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Mapper
 public interface CouponMapper extends BaseMapper<Coupon> {
 
     Coupon selectSameCoupon(@Param("saleoff") BigDecimal saleoff,

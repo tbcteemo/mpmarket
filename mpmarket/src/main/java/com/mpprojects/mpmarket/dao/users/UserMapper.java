@@ -9,9 +9,9 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-@Mapper
 public interface UserMapper extends BaseMapper<User> {
     UserToRole selectVipRelation(@Param("userid") Long userid);
     List<User> selectVipUser();     //选取数据库中所有有VIP这个role的user
     List<UserAndCouponShow> selectVipAndHisUnusedCoupon();
+    List<UserAndCouponShow> selectOneVipAndHisUnusedCoupon(@Param("userid")Long userid);
 }

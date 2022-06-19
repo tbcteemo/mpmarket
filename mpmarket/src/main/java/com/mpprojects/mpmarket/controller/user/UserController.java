@@ -12,15 +12,13 @@ import com.mpprojects.mpmarket.model.shop.relationship.UserCoupon;
 import com.mpprojects.mpmarket.model.users.User;
 import com.mpprojects.mpmarket.model.users.UserRole;
 import com.mpprojects.mpmarket.model.users.relationship.UserToRole;
+import com.mpprojects.mpmarket.service.users.AdminService;
 import com.mpprojects.mpmarket.service.users.UserService;
-import com.mpprojects.mpmarket.service.users.impl.UserServiceImpl;
 import com.mpprojects.mpmarket.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 import java.math.BigDecimal;
-import java.util.List;
 
 
 @RestController
@@ -148,6 +146,9 @@ public class UserController {
         userCouponMapper.updateById(userCoupon);
         return new Response("200","此优惠券状态为：" + isselect.toString());
     }
+
+    @Autowired
+    private AdminService adminService;
 
     @GetMapping("/testisvip")
     public boolean isvip(@RequestParam long userid){

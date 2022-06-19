@@ -22,7 +22,6 @@ import com.mpprojects.mpmarket.service.shop.impl.utils.CalculateMethodsForCoupon
 import com.mpprojects.mpmarket.service.users.UserService;
 import com.mpprojects.mpmarket.utils.Response;
 import com.mpprojects.mpmarket.utils.SettlementException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,34 +34,34 @@ import java.util.List;
 @Transactional(rollbackFor = Exception.class)
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implements OrderService {
 
-    @Autowired
+    @Resource
     private CartProductMapper cartProductMapper;
 
-    @Autowired
+    @Resource
     private OrderProductMapper orderProductMapper;
 
-    @Autowired
+    @Resource
     private ProductMapper productMapper;
 
-    @Autowired
+    @Resource
     private OrderMapper orderMapper;
 
-    @Autowired
+    @Resource
     private UserMapper userMapper;
 
-    @Autowired
+    @Resource
     private UserService userService;
 
-    @Autowired
+    @Resource
     private CouponMapper couponMapper;
 
-    @Autowired
+    @Resource
     private CartMapper cartMapper;
 
-    @Autowired
+    @Resource
     private UserCouponMapper userCouponMapper;
 
-    @Autowired
+    @Resource
     private CalculateMethodsForCouponRule calculateMethodsForCouponRule;
 
     @Resource
@@ -131,6 +130,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
                         && coupon.getStartTime().isBefore(timenow)
                         && coupon.getEndTime().isAfter(timenow)) {
                     finalPrice = viptp.subtract(coupon.getSaleoff());
+                }else {
+                    finalPrice = viptp;
                 }
             }
         }else{
@@ -138,12 +139,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
             Coupon coupon = couponMapper.getSelectedCoupon(userId);
             if (coupon == null){
                 finalPrice = usertp;
-            }
-            //此处的if判断是判定打折之后的价格是否满足满减条件
-            if (usertp.compareTo(coupon.getStartPrice()) >= 0
-                    && coupon.getStartTime().isBefore(timenow)
-                    && coupon.getEndTime().isAfter(timenow)){
-                finalPrice = usertp.subtract(coupon.getSaleoff());
+            }else {
+                //此处的if判断是判定打折之后的价格是否满足满减条件
+                if (usertp.compareTo(coupon.getStartPrice()) >= 0
+                        && coupon.getStartTime().isBefore(timenow)
+                        && coupon.getEndTime().isAfter(timenow)) {
+                    finalPrice = usertp.subtract(coupon.getSaleoff());
+                }else {
+                    finalPrice = usertp;
+                }
             }
         }
         //余额判定的逻辑，余额不足则报错充值，余额够则扣费；
@@ -303,6 +307,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         createRelation(userid,orderid);
         LocalDateTime timenow = LocalDateTime.now();
 
+        //检查优惠券使用是否合法。
+        Coupon coupon = couponMapper.selectById(couponid);
+        if (couponRuleMapper.selectById(coupon.getRuleId()).getRuleNumber() != 3){
+            throw new SettlementException("优惠券使用范围错误，请重新选择");
+        }
+
         //3.进行vip身份判定,并根据不同的身份调用不同的价格算法。
         BigDecimal price = new BigDecimal(0);
         if (userService.isVip(userid) == true){
@@ -311,13 +321,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
             price = calculateMethodsForCouponRule.calUserPrice(orderid);
         }
 
-        //判定是否能用优惠券，并计算相应的最终价格
-        Coupon coupon = couponMapper.selectById(couponid);
         BigDecimal finalPrice = new BigDecimal(0);
         if (coupon == null){
             finalPrice = price;
         }else{
-            if (price.compareTo(coupon.getStartPrice()) > 0
+            if (price.compareTo(coupon.getStartPrice()) >= 0
                     && LocalDateTime.now().isAfter(coupon.getStartTime())
                     && LocalDateTime.now().isBefore(coupon.getEndTime())){
                 finalPrice = price.subtract(coupon.getSaleoff());
@@ -370,6 +378,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         //身份判定，并套用相应的算法
         BigDecimal finalPrice = new BigDecimal(0);
         Coupon coupon = couponMapper.selectById(couponid);
+        if (couponRuleMapper.selectById(coupon.getRuleId()).getRuleNumber() != 1){
+            throw new SettlementException("优惠券使用范围错误，请重新选择");
+        }
         long ruleid = coupon.getRuleId();
 
         if (userService.isVip(userid) == true){
@@ -453,6 +464,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
         //身份判定，并套用相应的算法
         BigDecimal finalPrice = new BigDecimal(0);
         Coupon coupon = couponMapper.selectById(couponid);
+        if (couponRuleMapper.selectById(coupon.getRuleId()).getRuleNumber() != 2){
+            throw new SettlementException("优惠券使用范围错误，请重新选择");
+        }
         long ruleid = coupon.getRuleId();
 
         if (userService.isVip(userid) == true){

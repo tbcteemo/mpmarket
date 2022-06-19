@@ -5,6 +5,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.mpprojects.mpmarket.model.users.relationship.UserToRole;
 import org.apache.ibatis.annotations.Mapper;
 
-@Mapper
 public interface UserToRoleMapper extends BaseMapper<UserToRole> {
 }

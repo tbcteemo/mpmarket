@@ -9,11 +9,10 @@ import org.apache.ibatis.annotations.Param;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Mapper
 public interface CartProductMapper extends BaseMapper<CartProduct> {
 
 //    此方法已因为增加"商品单独折扣"的原因废弃
-    BigDecimal preCal();
+    BigDecimal preCal(@Param("cartid")Long cartid);
 
     List<CartProduct> getSelectedProducts(@Param("userid") Long userid);
     List<CartProduct> selectAll(@Param("cartid") Long cartid);

@@ -10,7 +10,6 @@ import org.apache.ibatis.annotations.Param;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Mapper
 public interface OrderMapper extends BaseMapper<UserOrder> {
 
     /** 此方法是根据传入的用户ID，将当前用户的所有订单都返回。*/

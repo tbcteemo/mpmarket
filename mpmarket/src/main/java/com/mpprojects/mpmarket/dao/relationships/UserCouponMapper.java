@@ -5,7 +5,6 @@ import com.mpprojects.mpmarket.model.shop.relationship.UserCoupon;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-@Mapper
 public interface UserCouponMapper extends BaseMapper<UserCoupon> {
     UserCoupon isUseOnlyOne(Long userid);
     UserCoupon selectOneByUserId(@Param("userid") Long userid);
