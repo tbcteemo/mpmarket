@@ -5,6 +5,9 @@ spring:
     url: jdbc:mysql://localhost:3306/mpmarket?serverTimezone=UTC
     username: root
     password: cz5201314yl
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
 mybatis-plus:
   configuration:
