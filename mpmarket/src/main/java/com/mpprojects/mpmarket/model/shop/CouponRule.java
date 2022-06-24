@@ -3,6 +3,8 @@ package com.mpprojects.mpmarket.model.shop;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
@@ -17,12 +19,14 @@ import java.util.List;
  *
  * 对应的商品List：采用中间表的形式。Rule与Product是多对多的关系。
  */
+@ApiModel(value = "优惠券规则实体",description = "优惠券规则的实体类，有4种规则，分别是：白名单，黑名单，全局，指定类目可用，ruleNumber对应为 1，2，3，4")
 @Data
 public class CouponRule {
     @TableId(type = IdType.AUTO)
     private Long id;
 
     private String ruleName;        //规则的名称
+    @ApiModelProperty(value = "优惠券规则的编号，有4种规则，分别是：白名单，黑名单，全局，指定类目可用，ruleNumber对应为 1，2，3，4")
     private Integer ruleNumber;        //规则类型的编号，见上面。
     private String description;
 }
