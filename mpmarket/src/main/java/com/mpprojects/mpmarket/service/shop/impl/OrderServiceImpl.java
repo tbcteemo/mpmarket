@@ -246,6 +246,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, UserOrder> implem
                 +"原价：" + tp + "成交价：" + finalPrice);
     }
 
+    /** 无优惠券时的结算方法 */
     @Override
     public Response createOrder3(Long userid) throws SettlementException{
         //1.new一个order对象，并获得其userId；

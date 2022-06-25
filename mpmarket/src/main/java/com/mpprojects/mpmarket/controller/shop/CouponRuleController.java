@@ -10,7 +10,7 @@ import com.mpprojects.mpmarket.utils.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -68,7 +68,7 @@ public class CouponRuleController {
     public IPage<CouponRule> pageAll(@ApiParam(name = "当前页",type = "MybatisPlus提供的Ipage分页中的当前页",required = true)
                                          @RequestParam long current,
                                      @ApiParam(name = "一页的条目数",type = "MybatisPlus提供的Ipage分页中的size参数",required = true)
-                                     @RequestParam long size){
+                                        @RequestParam long size){
         IPage<CouponRule> iPage = new Page<>(current,size);
         return couponRuleMapper.selectPage(iPage,null);
     }
@@ -78,8 +78,10 @@ public class CouponRuleController {
     //生成规则与商品的中间表记录
     @ApiOperation(value = "根据传入的优惠券规则id和商品id，生成一条规则实体与商品实体的中间表记录",tags = {"中间表","其他操作"})
     @PostMapping("/relateProduct")
-    public Response relate(@RequestParam long ruleid,
-                         @RequestParam long productid){
+    public Response relate(@ApiParam(name = "优惠券规则id",type = "优惠券规则的主键id",required = true)
+                                @RequestParam long ruleid,
+                         @ApiParam(name = "商品id",type = "主键id",required = true)
+                                @RequestParam long productid){
         CouponRuleToProduct couponRuleToProduct = new CouponRuleToProduct();
         couponRuleToProduct.setProductId(productid);
         couponRuleToProduct.setRuleId(ruleid);

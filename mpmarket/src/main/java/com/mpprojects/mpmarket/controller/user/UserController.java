@@ -15,37 +15,44 @@ import com.mpprojects.mpmarket.model.users.relationship.UserToRole;
 import com.mpprojects.mpmarket.service.users.AdminService;
 import com.mpprojects.mpmarket.service.users.UserService;
 import com.mpprojects.mpmarket.utils.Response;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 
 
+@Api(tags = {"用户系统", "基础功能"})
 @RestController
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
+    @Resource
     private UserRoleMapper userRoleMapper;
 
-    @Autowired
+    @Resource
     private UserToRoleMapper userToRoleMapper;
 
-    @Autowired
+    @Resource
     private UserMapper userMapper;
 
-    @Autowired
+    @Resource
     private UserService userService;
 
-    @Autowired
+    @Resource
     private UserCouponMapper userCouponMapper;
 
+    @ApiOperation(value = "根据传入重要属性，新建一个User到数据库中",tags = "添加")
     @PostMapping("/add")
-    public Response addUser(@RequestParam String name,
-                            @RequestParam String password,
-                            @RequestParam String email,
-                            @RequestParam String mobile,
-                            @RequestParam String role){
+    public Response addUser(@ApiParam(name = "用户名",required = true) @RequestParam String name,
+                            @ApiParam(name = "用户密码",required = true) @RequestParam String password,
+                            @ApiParam(name = "用户email",required = true) @RequestParam String email,
+                            @ApiParam(name = "用户手机号",required = true) @RequestParam String mobile,
+                            @ApiParam(name = "用户角色",required = true) @RequestParam String role){
 
         QueryWrapper<User> queryWrapper1 = new QueryWrapper();
         QueryWrapper<User> queryWrapper2 = new QueryWrapper();
@@ -92,8 +99,10 @@ public class UserController {
         return new Response("1003","用户名已存在");
     }
 
+    @ApiOperation(value = "根据传入的id删除对应的用户",tags = "删除")
     @DeleteMapping("/delete")
-    public Response deleteById(@RequestParam long id){
+    public Response deleteById(@ApiParam(name = "用户id",value = "主键id",required = true)
+                                    @RequestParam long id){
         User user = userMapper.selectById(id);
         if (user != null) {
             userMapper.deleteById(id);
@@ -102,8 +111,10 @@ public class UserController {
         return new Response("1004","此用户不存在");
     }
 
+    @ApiOperation(value = "传入User对象，将其更新到数据库中",tags = "修改")
     @PutMapping("/update")
-    public Response updateUser(@RequestBody User user){
+    public Response updateUser(@ApiParam(name = "用户对象",required = true)
+                                    @RequestBody User user){
         if (user.getMoney() != null){
             return new Response("1002","涉及余额修改，修改非法！");
         }
@@ -111,22 +122,31 @@ public class UserController {
         return new Response("200","更改成功");
     }
 
+    @ApiOperation(value = "根据传入的id获得对应的用户对象",tags = "获取")
     @GetMapping("/get")
-    public Response<User> getUser(@RequestParam long id){
+    public Response<User> getUser(@ApiParam(name = "用户id",value = "主键id",required = true)
+                                      @RequestParam long id){
         User user = userMapper.selectById(id);
         return new Response<>("200","根据id选择User成功",user);
     }
 
+    @ApiOperation(value = "根据分页参数，将所有用户分页返回",tags = "分页")
     @GetMapping("/page")
-    public IPage<User> pageAll(@RequestParam long current, @RequestParam long size){
+    public IPage<User> pageAll(@ApiParam(name = "当前页码",value = "MybatisPlus的Ipage插件的current参数",required = true)
+                                    @RequestParam long current,
+                               @ApiParam(name = "每页条数",value = "MybatisPlus的Ipage插件的size参数",required = true)
+                                    @RequestParam long size){
         IPage<User> ipage = new Page<>(current,size);
         return userMapper.selectPage(ipage,null);
     }
 
     /** VIP的金额充值 */
+    @ApiOperation(value = "给用户充值金额",notes = "默认只允许vip就行充值，非vip用户充值会报错",tags = "其他操作")
     @PutMapping("/recharge")
-    public Response recharge(@RequestParam Long userid,
-                            @RequestParam BigDecimal income){
+    public Response recharge(@ApiParam(name = "用户id",value = "主键id",required = true)
+                                 @RequestParam Long userid,
+                            @ApiParam(name = "充值金额",value = "充值金额，只接受BigDecimal类型",required = true)
+                                 @RequestParam BigDecimal income){
         Boolean isvip = userService.isVip(userid);
         if (isvip == false){
             return new Response("1002","非VIP不允许充值，请使用其他支付方式");
@@ -137,26 +157,26 @@ public class UserController {
         return new Response("200","金额充值成功,余额："+userMapper.selectById(userid).getMoney().toString());
     }
 
+    @ApiOperation(value = "更新一个优惠券的被选择状态",notes = "一个优惠券只有在被选中状态下，才会被提交结算",tags = "其他操作")
     @PutMapping("/updateselectcoupon")
-    public Response updateSelectCoupon(@RequestParam Long userid,
-                               @RequestParam Long couponid,
-                                @RequestParam Boolean isselect){
+    public Response updateSelectCoupon(@ApiParam(name = "用户id",value = "主键id",required = true)
+                                            @RequestParam Long userid,
+                                       @ApiParam(name = "优惠券id",value = "主键id",required = true)
+                                            @RequestParam Long couponid,
+                                       @ApiParam(name = "是否被选择",value = "修改User-Coupon中间表中对应记录的isSelect属性",required = true)
+                                            @RequestParam Boolean isselect){
         UserCoupon userCoupon = userCouponMapper.selectByUserIdAndCouponId(userid,couponid);
         userCoupon.setIsSelect(isselect);
         userCouponMapper.updateById(userCoupon);
         return new Response("200","此优惠券状态为：" + isselect.toString());
     }
 
-    @Autowired
-    private AdminService adminService;
-
-    @GetMapping("/testisvip")
-    public boolean isvip(@RequestParam long userid){
-       return userService.isVip(userid);
-    }
-
+    /** 根据传入的userid，选择其在user-role关系表中为vip的记录。判断是否为VIP用。如果返回为null，则不是VIP，返回具体对象，则是VIP */
+    @ApiOperation(value = "根据传入的userid，选择其在user-role关系表中为vip的记录",
+            notes = "判断是否为VIP用。如果返回为null，则不是VIP，返回具体对象，则是VIP",tags = "其他操作")
     @GetMapping("/selectviprelation")
-    public UserToRole select(@RequestParam long userid){
+    public UserToRole select(@ApiParam(name = "用户id",value = "主键id",required = true)
+                                 @RequestParam long userid){
         return userMapper.selectVipRelation(userid);
     }
 

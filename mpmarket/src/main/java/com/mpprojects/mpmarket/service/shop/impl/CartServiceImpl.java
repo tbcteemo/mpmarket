@@ -8,18 +8,19 @@ import com.mpprojects.mpmarket.model.shop.Cart;
 import com.mpprojects.mpmarket.service.shop.CartService;
 import com.mpprojects.mpmarket.service.users.UserService;
 import com.mpprojects.mpmarket.service.users.impl.UserServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 
 @Service
 public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements CartService {
 
-    @Autowired
+    @Resource
     private CartProductMapper cartProductMapper;
 
-    @Autowired
+    @Resource
     private UserService userService;
 
     //根据购物车编号进行预结算，得到需要的金额。

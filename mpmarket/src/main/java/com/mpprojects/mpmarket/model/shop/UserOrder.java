@@ -3,11 +3,13 @@ package com.mpprojects.mpmarket.model.shop;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@ApiModel(value = "订单实体")
 @Data
 public class UserOrder {
 

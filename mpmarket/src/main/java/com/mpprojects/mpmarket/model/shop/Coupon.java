@@ -3,15 +3,19 @@ package com.mpprojects.mpmarket.model.shop;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import org.apache.tomcat.jni.Local;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.naming.Name;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
 
 /** 优惠券的实体类。如果扣减额度，起用金额，生效时间，截止时间，是否VIP专属这几个属性同时相同，则会被认为是同一个优惠券*/
+@ApiModel(value = "优惠券实体")
 @Data
 public class Coupon {
     @TableId(type = IdType.AUTO)

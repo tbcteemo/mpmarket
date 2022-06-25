@@ -4,22 +4,22 @@ import com.mpprojects.mpmarket.dao.relationships.UserCouponMapper;
 import com.mpprojects.mpmarket.dao.shop.CouponMapper;
 import com.mpprojects.mpmarket.model.shop.Coupon;
 import com.mpprojects.mpmarket.model.shop.relationship.UserCoupon;
-import com.mpprojects.mpmarket.service.shop.CouponService;
 import com.mpprojects.mpmarket.service.users.UserService;
 import com.mpprojects.mpmarket.utils.Response;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
 @RestController
+@Api(tags = "优惠券系统")
 @RequestMapping("/coupon")
 public class CouponController {
 
     @Resource
     private CouponMapper couponMapper;
-
-    @Resource
-    private CouponService couponService;
 
     @Resource
     private UserService userService;
@@ -28,8 +28,10 @@ public class CouponController {
     private UserCouponMapper userCouponMapper;
 
 //    创建一个优惠券实体。
+    @ApiOperation(value = "添加优惠券",tags = "添加")
     @PostMapping("/add")
-    public Response add(@RequestBody Coupon coupon){
+    public Response add(@ApiParam(name = "优惠券实体",required = true)
+                            @RequestBody Coupon coupon){
 
 //        判定是否为相同的优惠券
         Coupon coupon1 = couponMapper.selectSameCoupon(coupon.getSaleoff(),
@@ -47,15 +49,19 @@ public class CouponController {
     }
 
     //删除一条优惠券记录
+    @ApiOperation(value = "删除优惠券",tags = "删除")
     @DeleteMapping("/delete")
-    public Response delete(@RequestParam Long id){
+    public Response delete(@ApiParam(name = "优惠券id",required = true)
+                               @RequestParam Long id){
         couponMapper.deleteById(id);
         return new Response("200","删除优惠券成功");
     }
 
     //修改一条优惠券
+    @ApiOperation(value = "修改优惠券",tags = "修改")
     @PutMapping("/put")
-    public Response update(@RequestBody Coupon coupon){
+    public Response update(@ApiParam(name = "优惠券实体",required = true)
+                               @RequestBody Coupon coupon){
         Coupon coupon1 = couponMapper.selectById(coupon.getId());
         if (coupon1 == null){
             return new Response("1002","id不存在或优惠券记录不存在，请检查id或者转到添加页面");
@@ -65,14 +71,18 @@ public class CouponController {
     }
 
     //获取一条优惠券记录
+    @ApiOperation(value = "获取一个优惠券",tags = "获取")
     @GetMapping("/get")
-    public Response<Coupon> get(@RequestParam Long id){
+    public Response<Coupon> get(@ApiParam(name = "优惠券id",required = true)@RequestParam Long id){
         return new Response<>("200","根据id获取优惠券对象成功",couponMapper.selectById(id));
     }
 
     //下发优惠券
+    @ApiOperation(value = "发放优惠券（不分角色）",tags = {"其他操作","实体"})
     @PostMapping("/givecoupon")
-    public Response<UserCoupon> givecoupon(@RequestParam Long userid,
+    public Response<UserCoupon> givecoupon(@ApiParam(name = "用户id",required = true)
+                                               @RequestParam Long userid,
+                               @ApiParam(name = "优惠券id",required = true)
                                @RequestParam Long couponid){
         Coupon coupon = couponMapper.selectById(couponid);
         UserCoupon userCoupon = new UserCoupon();

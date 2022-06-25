@@ -7,7 +7,7 @@ import com.mpprojects.mpmarket.model.shop.Coupon;
 import com.mpprojects.mpmarket.model.shop.relationship.UserCoupon;
 import com.mpprojects.mpmarket.service.shop.CouponService;
 import com.mpprojects.mpmarket.utils.Response;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
