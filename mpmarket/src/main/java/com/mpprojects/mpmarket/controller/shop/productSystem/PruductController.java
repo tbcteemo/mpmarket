@@ -1,4 +1,4 @@
-package com.mpprojects.mpmarket.controller.shop;
+package com.mpprojects.mpmarket.controller.shop.productSystem;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;

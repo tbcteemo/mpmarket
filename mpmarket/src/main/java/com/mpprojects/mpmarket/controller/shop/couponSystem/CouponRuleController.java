@@ -1,4 +1,4 @@
-package com.mpprojects.mpmarket.controller.shop;
+package com.mpprojects.mpmarket.controller.shop.couponSystem;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

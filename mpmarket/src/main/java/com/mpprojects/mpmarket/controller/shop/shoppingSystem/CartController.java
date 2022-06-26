@@ -1,4 +1,4 @@
-package com.mpprojects.mpmarket.controller.shop;
+package com.mpprojects.mpmarket.controller.shop.shoppingSystem;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.mpprojects.mpmarket.dao.relationships.CartProductMapper;
