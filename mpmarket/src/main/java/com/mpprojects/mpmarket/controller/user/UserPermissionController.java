@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
-@Api(tags = {"用户系统", "基本功能"})
+@Api(tags = {"用户系统", "基础功能"})
 @RestController
 @RequestMapping("/permission/user")
 public class UserPermissionController {

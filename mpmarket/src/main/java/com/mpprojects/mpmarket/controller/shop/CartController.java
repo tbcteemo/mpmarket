@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@Api(tags = {"购物系统","基本功能"})
+@Api(tags = {"购物系统","基础功能"})
 @RequestMapping("/cart")
 public class CartController {
 

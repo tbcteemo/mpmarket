@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 
 @RestController
-@Api(tags = {"优惠券系统","辅助"})
+@Api(tags = {"优惠券系统","辅助功能"})
 @RequestMapping("/couponrule")
 public class CouponRuleController {
 
@@ -76,7 +76,7 @@ public class CouponRuleController {
     /** 其他的有关规则的操作 */
 
     //生成规则与商品的中间表记录
-    @ApiOperation(value = "根据传入的优惠券规则id和商品id，生成一条规则实体与商品实体的中间表记录",tags = {"中间表","其他操作"})
+    @ApiOperation(value = "根据传入的优惠券规则id和商品id，生成一条规则实体与商品实体的中间表记录",tags = {"中间表","功能性操作"})
     @PostMapping("/relateProduct")
     public Response relate(@ApiParam(name = "优惠券规则id",type = "优惠券规则的主键id",required = true)
                                 @RequestParam long ruleid,

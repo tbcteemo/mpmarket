@@ -112,7 +112,7 @@ public class OrderController {
     }
 
     /** 此方法是加入了优惠券使用规则之后的统一结算接口 */
-    @ApiOperation(value = "传入用户id和优惠券id，自动判断优惠信息和角色计算",tags = {"其他操作", "结算"})
+    @ApiOperation(value = "传入用户id和优惠券id，自动判断优惠信息和角色计算",tags = {"功能性操作", "结算"})
     @PostMapping("/unitedSettle")
     public Response unitedSettle(@ApiParam(name = "用户id",value = "主键id",required = true)
                                         @RequestParam Long userid,

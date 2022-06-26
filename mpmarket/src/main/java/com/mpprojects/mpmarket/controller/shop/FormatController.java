@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
-@Api(tags = {"商品系统", "辅助"})
+@Api(tags = {"商品系统", "辅助功能"})
 @RestController
 @RequestMapping("/format")
 public class FormatController {

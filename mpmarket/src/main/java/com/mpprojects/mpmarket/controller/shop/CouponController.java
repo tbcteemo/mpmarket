@@ -78,7 +78,7 @@ public class CouponController {
     }
 
     //下发优惠券
-    @ApiOperation(value = "发放优惠券（不分角色）",tags = {"其他操作","实体"})
+    @ApiOperation(value = "发放优惠券（不分角色）",tags = {"功能性操作"})
     @PostMapping("/givecoupon")
     public Response<UserCoupon> givecoupon(@ApiParam(name = "用户id",required = true)
                                                @RequestParam Long userid,

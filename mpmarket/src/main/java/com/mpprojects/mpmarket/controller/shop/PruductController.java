@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
-@Api(tags = {"购物系统", "基本功能"})
+@Api(tags = {"购物系统", "基础功能"})
 @RestController
 @RequestMapping("/product")
 public class PruductController {

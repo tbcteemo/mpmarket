@@ -18,7 +18,7 @@ import javax.annotation.Resource;
 
 /** role的添加应该有一个权限认证的过程，此项目无security所以省略了。*/
 
-@Api(tags = {"管理员系统", "基本功能"})
+@Api(tags = {"管理员系统", "基础功能"})
 @RestController
 @RequestMapping("/role/admin")
 public class AdminRoleController {

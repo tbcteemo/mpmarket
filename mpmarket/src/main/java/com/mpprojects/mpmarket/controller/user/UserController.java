@@ -141,7 +141,7 @@ public class UserController {
     }
 
     /** VIP的金额充值 */
-    @ApiOperation(value = "给用户充值金额",notes = "默认只允许vip就行充值，非vip用户充值会报错",tags = "其他操作")
+    @ApiOperation(value = "给用户充值金额",notes = "默认只允许vip就行充值，非vip用户充值会报错",tags = "功能性操作")
     @PutMapping("/recharge")
     public Response recharge(@ApiParam(name = "用户id",value = "主键id",required = true)
                                  @RequestParam Long userid,
@@ -157,7 +157,7 @@ public class UserController {
         return new Response("200","金额充值成功,余额："+userMapper.selectById(userid).getMoney().toString());
     }
 
-    @ApiOperation(value = "更新一个优惠券的被选择状态",notes = "一个优惠券只有在被选中状态下，才会被提交结算",tags = "其他操作")
+    @ApiOperation(value = "更新一个优惠券的被选择状态",notes = "一个优惠券只有在被选中状态下，才会被提交结算",tags = "功能性操作")
     @PutMapping("/updateselectcoupon")
     public Response updateSelectCoupon(@ApiParam(name = "用户id",value = "主键id",required = true)
                                             @RequestParam Long userid,
@@ -173,7 +173,7 @@ public class UserController {
 
     /** 根据传入的userid，选择其在user-role关系表中为vip的记录。判断是否为VIP用。如果返回为null，则不是VIP，返回具体对象，则是VIP */
     @ApiOperation(value = "根据传入的userid，选择其在user-role关系表中为vip的记录",
-            notes = "判断是否为VIP用。如果返回为null，则不是VIP，返回具体对象，则是VIP",tags = "其他操作")
+            notes = "判断是否为VIP用。如果返回为null，则不是VIP，返回具体对象，则是VIP",tags = "功能性操作")
     @GetMapping("/selectviprelation")
     public UserToRole select(@ApiParam(name = "用户id",value = "主键id",required = true)
                                  @RequestParam long userid){
