@@ -32,9 +32,9 @@ public class AdminRoleController {
     /** 这个方法在在添加user的角色role的时候，会要求传入对应的permissionId，同时生成role-permission的关联记录*/
     @ApiOperation(value = "传入角色名和所需的权限的id，添加一个管理员系统用的角色实体对象",tags = "添加")
     @PostMapping("/add")
-    public Response add(@ApiParam(name = "角色名",required = true)
+    public Response add(@ApiParam(type = "角色名",required = true)
                             @RequestParam String name,
-                        @ApiParam(name = "权限id",required = true)
+                        @ApiParam(type = "权限id",required = true)
                             @RequestParam Long permissionId){
         //根据传入的name生成admin的role记录；
         AdminRole role = new AdminRole();

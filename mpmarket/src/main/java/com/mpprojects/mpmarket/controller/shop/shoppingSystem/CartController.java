@@ -31,7 +31,7 @@ public class CartController {
     /** 创建购物车 */
     @ApiOperation(value = "传入一个购物车对象，并添加到数据库中",tags = "添加")
     @PostMapping("/add")
-    public Response<Cart> add(@ApiParam(name = "用户id",value = "用户的主键id",required = true)
+    public Response<Cart> add(@ApiParam(type = "用户id",value = "用户的主键id",required = true)
                                   @RequestParam long userId){
         Cart cart = new Cart();
         cart.setUserId(userId);
@@ -44,7 +44,7 @@ public class CartController {
     /** 当前用户购物车展示 */
     @ApiOperation(value = "传入用户id，根据用户id获取其购物车对象",tags = "获取")
     @GetMapping("/show")
-    public Response<Cart> getByUserId(@ApiParam(name = "用户id",value = "用户的主键id",required = true)
+    public Response<Cart> getByUserId(@ApiParam(type = "用户id",value = "用户的主键id",required = true)
                                           @RequestParam long userid){
         QueryWrapper<Cart> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id",userid);
@@ -54,7 +54,7 @@ public class CartController {
     /** 添加商品到购物车*/
     @ApiOperation(value = "传入一个购物车-商品中间表对象，生成中间表记录，并添加到数据库中",tags = "添加")
     @PostMapping("/addproduct")
-    public Response<BigDecimal> addProduct(@ApiParam(name = "购物车-商品中间表实体",required = true)
+    public Response<BigDecimal> addProduct(@ApiParam(type = "购物车-商品中间表实体",required = true)
                                                @RequestBody CartProduct cartProduct){
         cartProductMapper.insert(cartProduct);
         return new Response<>("200",
@@ -65,7 +65,7 @@ public class CartController {
     /** 勾选购物车商品，将返回预结算总价，且更新中间表isSelected属性 */
     @ApiOperation(value = "传入一个购物车-商品中间表对象，并据此修改到数据库，根据修改后的选择状态返回预结算的总价",tags = "修改")
     @PutMapping("/selected")
-    public Response<BigDecimal> updateSelectedProduct(@ApiParam(name = "购物车-商品中间表实体",required = true)
+    public Response<BigDecimal> updateSelectedProduct(@ApiParam(type = "购物车-商品中间表实体",required = true)
                                                           @RequestBody CartProduct cartProduct){
         cartProductMapper.updateById(cartProduct);
         return new Response<>("200",
@@ -85,7 +85,7 @@ public class CartController {
     /** 前端传入userid，向前端传回一个CartShow对象的集合*/
     @ApiOperation(value = "传入用户id，返回其购物车中的细节。购物车细节的实体对应为CartShow",tags = "获取")
     @GetMapping("/showdetails")
-    public List<CartShow> showDetails(@ApiParam(name = "用户id",value = "用户的主键id",required = true)
+    public List<CartShow> showDetails(@ApiParam(type = "用户id",value = "用户的主键id",required = true)
                                           @RequestParam Long userid){
         return cartProductMapper.showDetails(userid);
     }

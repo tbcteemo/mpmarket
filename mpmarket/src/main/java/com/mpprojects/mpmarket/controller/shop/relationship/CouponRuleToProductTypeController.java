@@ -23,7 +23,7 @@ public class CouponRuleToProductTypeController {
 
     @ApiOperation(value = "添加优惠券规则-商品种类的中间表",tags = "添加")
     @PostMapping("/add")
-    public Response add(@ApiParam(name = "优惠券规则-商品种类的中间表实体对象",required = true)
+    public Response add(@ApiParam(type = "优惠券规则-商品种类的中间表实体对象",required = true)
                             @RequestBody CouponRuleToProductType couponRuleToProductType){
         couponRuleToProductTypeMapper.insert(couponRuleToProductType);
         return new Response("200",
@@ -32,7 +32,7 @@ public class CouponRuleToProductTypeController {
 
     @ApiOperation(value = "传入id，根据主键id删除优惠券规则-商品种类的中间表记录",tags = "删除")
     @DeleteMapping("/delete")
-    public Response add(@ApiParam(name = "中间表对象的id",value = "主键id",required = true)
+    public Response add(@ApiParam(type = "中间表对象的id",value = "主键id",required = true)
                             @RequestParam long id){
         couponRuleToProductTypeMapper.deleteById(id);
         return new Response("200","根据id删除成功");
@@ -40,7 +40,7 @@ public class CouponRuleToProductTypeController {
 
     @ApiOperation(value = "修改优惠券规则-商品种类的中间表",tags = "修改")
     @PutMapping("/update")
-    public Response update(@ApiParam(name = "优惠券规则-商品种类的中间表实体对象",required = true)
+    public Response update(@ApiParam(type = "优惠券规则-商品种类的中间表实体对象",required = true)
                                @RequestBody CouponRuleToProductType couponRuleToProductType){
         couponRuleToProductTypeMapper.updateById(couponRuleToProductType);
         return new Response("200","修改成功，该条关联表记录id为" + couponRuleToProductType.getId().toString());
@@ -48,7 +48,7 @@ public class CouponRuleToProductTypeController {
 
     @ApiOperation(value = "根据传入的id获取：优惠券规则-商品种类的中间表对象",tags = "获取")
     @GetMapping("/getOne")
-    public Response<CouponRuleToProductType> getone(@ApiParam(name = "中间表对象的id",value = "主键id",required = true)
+    public Response<CouponRuleToProductType> getone(@ApiParam(type = "中间表对象的id",value = "主键id",required = true)
                                                         @RequestParam long id){
         return new Response<>("200",
                 "根据主键id选择优惠券规则与商品的关联记录成功",

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
-@Api(tags = {"购物系统", "基础功能"})
+@Api(tags = {"商品系统", "基础功能"})
 @RestController
 @RequestMapping("/product")
 public class PruductController {
@@ -24,7 +24,7 @@ public class PruductController {
 
     @ApiOperation(value = "传入实体对象，添加到数据库中",tags = "添加")
     @PostMapping("/add")
-    public Response addProduct(@ApiParam(name = "商品实体",required = true)
+    public Response addProduct(@ApiParam(type = "商品实体",required = true)
                                    @RequestBody Product product){
 
         //使用sn对传入的产品进行数据库比对，没有则添加。
@@ -42,7 +42,7 @@ public class PruductController {
     //更新信息之前要获取这一条商品记录，所以肯定有id，所以根据id进行返回更新
     @ApiOperation(value = "传入商品实体对象，并将新的信息更新到数据库对应记录中",tags = "修改")
     @PutMapping("/update")
-    public Response updateProduct(@ApiParam(name = "商品实体",required = true)
+    public Response updateProduct(@ApiParam(type = "商品实体",required = true)
                                       @RequestBody Product product){
         Long getid = product.getId();
         Integer a = productMapper.updateById(product);
@@ -51,9 +51,9 @@ public class PruductController {
 
     @ApiOperation(value = "传入分页参数，对所有商品进行分页返回操作",tags = "分页")
     @GetMapping("/page")
-    public IPage<Product> pageAll(@ApiParam(name = "当前页",required = true)
+    public IPage<Product> pageAll(@ApiParam(type = "当前页",required = true)
                                       @RequestParam long current,
-                                  @ApiParam(name = "每页条数",required = true)
+                                  @ApiParam(type = "每页条数",required = true)
                                         @RequestParam long size){
         IPage<Product> iPage = new Page<>(current,size);
         return productMapper.selectPage(iPage,null);
@@ -61,7 +61,7 @@ public class PruductController {
 
     @ApiOperation(value = "根据传入的sn码获取商品对象",tags = "获取")
     @GetMapping("/getbysn")
-    public Response<Product> getBySn(@ApiParam(name = "商品的sn码",value = "sn码是一种商品独一无二的身份识别码",required = true)
+    public Response<Product> getBySn(@ApiParam(type = "商品的sn码",value = "sn码是一种商品独一无二的身份识别码",required = true)
                                          @RequestParam long sn){
         QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("sn",sn);
@@ -70,7 +70,7 @@ public class PruductController {
 
     @ApiOperation(value = "根据传入的id删除商品对象",tags = "删除")
     @DeleteMapping("/deletebyid")
-    public Response deletebyid(@ApiParam(name = "商品id",type = "主键id",required = true)
+    public Response deletebyid(@ApiParam(type = "商品id",required = true)
                                    @RequestParam Long id){
         productMapper.deleteById(id);
         return new Response("200","此次删除成功。一旦产生交易记录，商品不应该被删除");

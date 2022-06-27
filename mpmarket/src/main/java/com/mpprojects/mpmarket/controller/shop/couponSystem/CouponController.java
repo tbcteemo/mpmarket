@@ -30,7 +30,7 @@ public class CouponController {
 //    创建一个优惠券实体。
     @ApiOperation(value = "添加优惠券",tags = "添加")
     @PostMapping("/add")
-    public Response add(@ApiParam(name = "优惠券实体",required = true)
+    public Response add(@ApiParam(type = "优惠券实体",required = true)
                             @RequestBody Coupon coupon){
 
 //        判定是否为相同的优惠券
@@ -51,7 +51,7 @@ public class CouponController {
     //删除一条优惠券记录
     @ApiOperation(value = "删除优惠券",tags = "删除")
     @DeleteMapping("/delete")
-    public Response delete(@ApiParam(name = "优惠券id",required = true)
+    public Response delete(@ApiParam(type = "优惠券id",required = true)
                                @RequestParam Long id){
         couponMapper.deleteById(id);
         return new Response("200","删除优惠券成功");
@@ -60,7 +60,7 @@ public class CouponController {
     //修改一条优惠券
     @ApiOperation(value = "修改优惠券",tags = "修改")
     @PutMapping("/put")
-    public Response update(@ApiParam(name = "优惠券实体",required = true)
+    public Response update(@ApiParam(type = "优惠券实体",required = true)
                                @RequestBody Coupon coupon){
         Coupon coupon1 = couponMapper.selectById(coupon.getId());
         if (coupon1 == null){
@@ -73,16 +73,16 @@ public class CouponController {
     //获取一条优惠券记录
     @ApiOperation(value = "获取一个优惠券",tags = "获取")
     @GetMapping("/get")
-    public Response<Coupon> get(@ApiParam(name = "优惠券id",required = true)@RequestParam Long id){
+    public Response<Coupon> get(@ApiParam(type = "优惠券id",required = true)@RequestParam Long id){
         return new Response<>("200","根据id获取优惠券对象成功",couponMapper.selectById(id));
     }
 
     //下发优惠券
     @ApiOperation(value = "发放优惠券（不分角色）",tags = {"功能性操作"})
     @PostMapping("/givecoupon")
-    public Response<UserCoupon> givecoupon(@ApiParam(name = "用户id",required = true)
+    public Response<UserCoupon> givecoupon(@ApiParam(type = "用户id",required = true)
                                                @RequestParam Long userid,
-                               @ApiParam(name = "优惠券id",required = true)
+                               @ApiParam(type = "优惠券id",required = true)
                                @RequestParam Long couponid){
         Coupon coupon = couponMapper.selectById(couponid);
         UserCoupon userCoupon = new UserCoupon();

@@ -31,9 +31,9 @@ public class UserRoleController {
 
     @ApiOperation(value = "添加一个角色，角色必须指定一个权限",tags = "添加")
     @PostMapping("/add")
-    public Response add(@ApiParam(name = "角色名",required = true)
+    public Response add(@ApiParam(type = "角色名",required = true)
                             @RequestParam String name,
-                      @ApiParam(name = "权限id",required = true)
+                      @ApiParam(type = "权限id",required = true)
                             @RequestParam Long permissionId){
         //根据传入的name生成admin的role记录；
         UserRole role = new UserRole();

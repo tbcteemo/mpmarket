@@ -41,10 +41,10 @@ public class AdminController {
 
     @ApiOperation(value = "通过传入关键属性添加一个管理员",notes = "关键参数依次为：name，password，email，role",tags = "添加")
     @PostMapping("/add")
-    public Response addAdmin(@ApiParam(name = "管理员用户名",required = true) @RequestParam String name,
-                             @ApiParam(name = "管理员密码",required = true) @RequestParam String password,
-                             @ApiParam(name = "管理员邮箱",required = true) @RequestParam String email,
-                             @ApiParam(name = "管理员角色",required = true) @RequestParam String role){
+    public Response addAdmin(@ApiParam(type = "管理员用户名",required = true) @RequestParam String name,
+                             @ApiParam(type = "管理员密码",required = true) @RequestParam String password,
+                             @ApiParam(type = "管理员邮箱",required = true) @RequestParam String email,
+                             @ApiParam(type = "管理员角色",required = true) @RequestParam String role){
 
         QueryWrapper<Admin> queryWrapper1 = new QueryWrapper();
         QueryWrapper<Admin> queryWrapper2 = new QueryWrapper();
@@ -87,7 +87,7 @@ public class AdminController {
 
     @ApiOperation(value = "传入主键id删除对应的管理员用户",tags = "删除")
     @DeleteMapping("/delete")
-    public Response deleteById(@ApiParam(name = "管理员id",value = "主键id",required = true)
+    public Response deleteById(@ApiParam(type = "管理员id",value = "主键id",required = true)
                                    @RequestParam long id){
         Admin admin = adminMapper.selectById(id);
         if (admin != null) {
@@ -99,7 +99,7 @@ public class AdminController {
 
     @ApiOperation(value = "传入管理员对象，修改数据库对应的内容",tags = "修改")
     @PutMapping("/update")
-    public Response updateUser(@ApiParam(name = "管理员对象",required = true)
+    public Response updateUser(@ApiParam(type = "管理员对象",required = true)
                                    @RequestBody Admin admin){
         adminMapper.updateById(admin);
         return new Response("200","更改成功");
@@ -107,7 +107,7 @@ public class AdminController {
 
     @ApiOperation(value = "传入主键id获取对应的管理员用户",tags = "获取")
     @GetMapping("/show")
-    public Response<Admin> showUser(@ApiParam(name = "管理员id",value = "主键id",required = true)
+    public Response<Admin> showUser(@ApiParam(type = "管理员id",value = "主键id",required = true)
                                         @RequestParam long id){
         Admin admin = adminMapper.selectById(id);
         return new Response<>("200","根据id选取管理员成功",admin);
@@ -115,9 +115,9 @@ public class AdminController {
 
     @ApiOperation(value = "传入分页参数对所有管理员用户进行分页操作",tags = "分页")
     @GetMapping("/showall")
-    public IPage<Admin> showAll(@ApiParam(name = "当前页码",required = true)
+    public IPage<Admin> showAll(@ApiParam(type = "当前页码",required = true)
                                     @RequestParam long current,
-                                @ApiParam(name = "每页条数",required = true)
+                                @ApiParam(type = "每页条数",required = true)
                                     @RequestParam long limit){
         IPage<Admin> ipage = new Page<>(current,limit);
         adminMapper.selectPage(ipage,null);

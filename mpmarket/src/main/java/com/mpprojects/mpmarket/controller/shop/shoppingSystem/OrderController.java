@@ -54,7 +54,7 @@ public class OrderController {
             notes = "加入优惠券系统后已经废弃！禁止使用！请使用统一结算接口！",
             tags = {"添加", "已废弃方法"})
     @PostMapping("/add")
-    public Response createOrder(@ApiParam(name = "用户id",value = "主键id",required = true)
+    public Response createOrder(@ApiParam(type = "用户id",value = "主键id",required = true)
                                     @RequestParam Long userId){
         return orderService.createOrder(userId);
     }
@@ -62,9 +62,9 @@ public class OrderController {
     @ApiOperation(value = "传入用户id和优惠券id，创建一个订单。自动识别用户身份采用不同的算法。",
             notes = "加入优惠券系统后已经废弃！禁止使用！请使用统一结算接口！",tags = {"添加", "已废弃方法"})
     @PostMapping("/add2")
-    public Response createOrder2(@ApiParam(name = "用户id",value = "主键id",required = true)
+    public Response createOrder2(@ApiParam(type = "用户id",value = "主键id",required = true)
                                      @RequestParam Long userid,
-                               @ApiParam(name = "优惠券id",value = "主键id",required = true)
+                               @ApiParam(type = "优惠券id",value = "主键id",required = true)
                                     @RequestParam Long couponid){
         return orderService.createOrder2(userid, couponid);
     }
@@ -79,11 +79,11 @@ public class OrderController {
     /** 这是直接返回订单实体的入口 */
     @ApiOperation(value = "传入用户id和分页参数，将此用户的所有订单以分页形式返回",tags = "分页")
     @GetMapping("/page")
-    public IPage<UserOrder> page(@ApiParam(name = "用户id",value = "主键id",required = true)
+    public IPage<UserOrder> page(@ApiParam(type = "用户id",value = "主键id",required = true)
                                         @RequestParam long userId,
-                                 @ApiParam(name = "MyBatisPlus的Ipage分页插件的current值",value = "当前页",required = true)
+                                 @ApiParam(type = "MyBatisPlus的Ipage分页插件的current值",value = "当前页",required = true)
                                         @RequestParam long current,
-                                 @ApiParam(name = "MyBatisPlus的Ipage分页插件的size值",value = "一页的条目数",required = true)
+                                 @ApiParam(type = "MyBatisPlus的Ipage分页插件的size值",value = "一页的条目数",required = true)
                                         @RequestParam long size){
         LambdaQueryWrapper<UserOrder> lqw = new LambdaQueryWrapper<>();
         lqw.eq(UserOrder::getUserId,userId);
@@ -94,11 +94,11 @@ public class OrderController {
     /** 这是返回订单展示实体OrderShow的入口*/
     @ApiOperation(value = "传入用户id和分页参数，将此用户的所有订单以及订单详情以分页的形式返回",tags = "分页")
     @GetMapping("/ordershow/page")
-    public PageInfo<OrderShow> orderShowPage(@ApiParam(name = "用户id",value = "主键id",required = true)
+    public PageInfo<OrderShow> orderShowPage(@ApiParam(type = "用户id",value = "主键id",required = true)
                                                     @RequestParam Long userId,
-                                             @ApiParam(name = "MyBatisPlus的Ipage分页插件的current值",value = "当前页",required = true)
+                                             @ApiParam(type = "MyBatisPlus的Ipage分页插件的current值",value = "当前页",required = true)
                                                     @RequestParam Integer limit,
-                                             @ApiParam(name = "MyBatisPlus的Ipage分页插件的size值",value = "一页的条目数",required = true)
+                                             @ApiParam(type = "MyBatisPlus的Ipage分页插件的size值",value = "一页的条目数",required = true)
                                                     @RequestParam Integer size){
         return orderService.pageAllOrders(userId,limit,size);
     }
@@ -106,7 +106,7 @@ public class OrderController {
     /** 这是根据订单号单独返回一个订单的所有明细条目*/
     @ApiOperation(value = "传入订单id，将该订单以订单详情返回",tags = "获取")
     @GetMapping("/ordershow/one")
-    public List<OrderShow> getOneOrder(@ApiParam(name = "订单id",value = "主键id",required = true)
+    public List<OrderShow> getOneOrder(@ApiParam(type = "订单id",value = "主键id",required = true)
                                            @RequestParam Long orderid){
         return orderService.listOneOrder(orderid);
     }
@@ -114,9 +114,9 @@ public class OrderController {
     /** 此方法是加入了优惠券使用规则之后的统一结算接口 */
     @ApiOperation(value = "传入用户id和优惠券id，自动判断优惠信息和角色计算",tags = {"功能性操作", "结算"})
     @PostMapping("/unitedSettle")
-    public Response unitedSettle(@ApiParam(name = "用户id",value = "主键id",required = true)
+    public Response unitedSettle(@ApiParam(type = "用户id",value = "主键id",required = true)
                                         @RequestParam Long userid,
-                                 @ApiParam(name = "优惠券id",value = "主键id",required = true)
+                                 @ApiParam(type = "优惠券id",value = "主键id",required = true)
                                         @RequestParam Long couponid){
         CouponRule rule = couponRuleMapper.selectById(couponMapper.selectById(couponid).getRuleId());
         Integer type = rule.getRuleNumber();

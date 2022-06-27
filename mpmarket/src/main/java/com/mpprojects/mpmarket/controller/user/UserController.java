@@ -48,11 +48,11 @@ public class UserController {
 
     @ApiOperation(value = "根据传入重要属性，新建一个User到数据库中",tags = "添加")
     @PostMapping("/add")
-    public Response addUser(@ApiParam(name = "用户名",required = true) @RequestParam String name,
-                            @ApiParam(name = "用户密码",required = true) @RequestParam String password,
-                            @ApiParam(name = "用户email",required = true) @RequestParam String email,
-                            @ApiParam(name = "用户手机号",required = true) @RequestParam String mobile,
-                            @ApiParam(name = "用户角色",required = true) @RequestParam String role){
+    public Response addUser(@ApiParam(type = "用户名",required = true) @RequestParam String name,
+                            @ApiParam(type = "用户密码",required = true) @RequestParam String password,
+                            @ApiParam(type = "用户email",required = true) @RequestParam String email,
+                            @ApiParam(type = "用户手机号",required = true) @RequestParam String mobile,
+                            @ApiParam(type = "用户角色",required = true) @RequestParam String role){
 
         QueryWrapper<User> queryWrapper1 = new QueryWrapper();
         QueryWrapper<User> queryWrapper2 = new QueryWrapper();
@@ -101,7 +101,7 @@ public class UserController {
 
     @ApiOperation(value = "根据传入的id删除对应的用户",tags = "删除")
     @DeleteMapping("/delete")
-    public Response deleteById(@ApiParam(name = "用户id",value = "主键id",required = true)
+    public Response deleteById(@ApiParam(type = "用户id",value = "主键id",required = true)
                                     @RequestParam long id){
         User user = userMapper.selectById(id);
         if (user != null) {
@@ -113,7 +113,7 @@ public class UserController {
 
     @ApiOperation(value = "传入User对象，将其更新到数据库中",tags = "修改")
     @PutMapping("/update")
-    public Response updateUser(@ApiParam(name = "用户对象",required = true)
+    public Response updateUser(@ApiParam(type = "用户对象",required = true)
                                     @RequestBody User user){
         if (user.getMoney() != null){
             return new Response("1002","涉及余额修改，修改非法！");
@@ -124,7 +124,7 @@ public class UserController {
 
     @ApiOperation(value = "根据传入的id获得对应的用户对象",tags = "获取")
     @GetMapping("/get")
-    public Response<User> getUser(@ApiParam(name = "用户id",value = "主键id",required = true)
+    public Response<User> getUser(@ApiParam(type = "用户id",value = "主键id",required = true)
                                       @RequestParam long id){
         User user = userMapper.selectById(id);
         return new Response<>("200","根据id选择User成功",user);
@@ -132,9 +132,9 @@ public class UserController {
 
     @ApiOperation(value = "根据分页参数，将所有用户分页返回",tags = "分页")
     @GetMapping("/page")
-    public IPage<User> pageAll(@ApiParam(name = "当前页码",value = "MybatisPlus的Ipage插件的current参数",required = true)
+    public IPage<User> pageAll(@ApiParam(type = "当前页码",value = "MybatisPlus的Ipage插件的current参数",required = true)
                                     @RequestParam long current,
-                               @ApiParam(name = "每页条数",value = "MybatisPlus的Ipage插件的size参数",required = true)
+                               @ApiParam(type = "每页条数",value = "MybatisPlus的Ipage插件的size参数",required = true)
                                     @RequestParam long size){
         IPage<User> ipage = new Page<>(current,size);
         return userMapper.selectPage(ipage,null);
@@ -143,9 +143,9 @@ public class UserController {
     /** VIP的金额充值 */
     @ApiOperation(value = "给用户充值金额",notes = "默认只允许vip就行充值，非vip用户充值会报错",tags = "功能性操作")
     @PutMapping("/recharge")
-    public Response recharge(@ApiParam(name = "用户id",value = "主键id",required = true)
+    public Response recharge(@ApiParam(type = "用户id",value = "主键id",required = true)
                                  @RequestParam Long userid,
-                            @ApiParam(name = "充值金额",value = "充值金额，只接受BigDecimal类型",required = true)
+                            @ApiParam(type = "充值金额",value = "充值金额，只接受BigDecimal类型",required = true)
                                  @RequestParam BigDecimal income){
         Boolean isvip = userService.isVip(userid);
         if (isvip == false){
@@ -159,11 +159,11 @@ public class UserController {
 
     @ApiOperation(value = "更新一个优惠券的被选择状态",notes = "一个优惠券只有在被选中状态下，才会被提交结算",tags = "功能性操作")
     @PutMapping("/updateselectcoupon")
-    public Response updateSelectCoupon(@ApiParam(name = "用户id",value = "主键id",required = true)
+    public Response updateSelectCoupon(@ApiParam(type = "用户id",value = "主键id",required = true)
                                             @RequestParam Long userid,
-                                       @ApiParam(name = "优惠券id",value = "主键id",required = true)
+                                       @ApiParam(type = "优惠券id",value = "主键id",required = true)
                                             @RequestParam Long couponid,
-                                       @ApiParam(name = "是否被选择",value = "修改User-Coupon中间表中对应记录的isSelect属性",required = true)
+                                       @ApiParam(type = "是否被选择",value = "修改User-Coupon中间表中对应记录的isSelect属性",required = true)
                                             @RequestParam Boolean isselect){
         UserCoupon userCoupon = userCouponMapper.selectByUserIdAndCouponId(userid,couponid);
         userCoupon.setIsSelect(isselect);
@@ -175,7 +175,7 @@ public class UserController {
     @ApiOperation(value = "根据传入的userid，选择其在user-role关系表中为vip的记录",
             notes = "判断是否为VIP用。如果返回为null，则不是VIP，返回具体对象，则是VIP",tags = "功能性操作")
     @GetMapping("/selectviprelation")
-    public UserToRole select(@ApiParam(name = "用户id",value = "主键id",required = true)
+    public UserToRole select(@ApiParam(type = "用户id",value = "主键id",required = true)
                                  @RequestParam long userid){
         return userMapper.selectVipRelation(userid);
     }

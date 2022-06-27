@@ -29,7 +29,7 @@ public class CouponRuleController {
     //添加一个规则对象
     @ApiOperation(value = "传入一个优惠券的规则对象，并添加到数据库中",tags = "添加")
     @PostMapping("/add")
-    public Response add(@ApiParam(name = "优惠券规则实体",type = "优惠券规则实体对象",required = true)
+    public Response add(@ApiParam(type = "优惠券规则实体",required = true)
                             @RequestBody CouponRule couponRule){
         couponRuleMapper.insert(couponRule);
         long id = couponRule.getId();
@@ -39,7 +39,7 @@ public class CouponRuleController {
     //根据id删除指定规则
     @ApiOperation(value = "根据id删除数据库的记录",tags = "删除")
     @DeleteMapping("/delete")
-    public Response delete(@ApiParam(name = "优惠券规则实体的id",type = "主键id",required = true)
+    public Response delete(@ApiParam(type = "优惠券规则实体的id",required = true)
                                @RequestParam long id){
         couponRuleMapper.deleteById(id);
         return new Response("200","id为：" + id + "的规则已删除");
@@ -48,7 +48,7 @@ public class CouponRuleController {
     //更新规则
     @ApiOperation(value = "传入一个商品类型类对象，并在数据库中更新",tags = "修改")
     @PutMapping("/put")
-    public Response update(@ApiParam(name = "优惠券规则实体",type = "优惠券规则对象",required = true)
+    public Response update(@ApiParam(type = "优惠券规则实体",required = true)
                                @RequestBody CouponRule couponRule){
         couponRuleMapper.updateById(couponRule);
         return new Response("200","id为：" + couponRule.getId() +"的规则已更新");
@@ -57,7 +57,7 @@ public class CouponRuleController {
     //根据id获得规则对象
     @ApiOperation(value = "根据id获取数据库的记录",tags = "获取")
     @GetMapping("/getById")
-    public Response<CouponRule> getById(@ApiParam(name = "优惠券规则实体的id",type = "主键id",required = true)
+    public Response<CouponRule> getById(@ApiParam(type = "优惠券规则实体的id",required = true)
                                             @RequestParam long id){
         return new Response<>("200","根据id选择优惠券规则实体已成功",couponRuleMapper.selectById(id));
     }
@@ -65,9 +65,9 @@ public class CouponRuleController {
     //将所有规则分页。
     @ApiOperation(value = "传入current和size两个long类型值，选择所有的优惠券规则对象并进行分页",tags = "分页")
     @GetMapping("/pageAll")
-    public IPage<CouponRule> pageAll(@ApiParam(name = "当前页",type = "MybatisPlus提供的Ipage分页中的当前页",required = true)
+    public IPage<CouponRule> pageAll(@ApiParam(type = "当前页",required = true)
                                          @RequestParam long current,
-                                     @ApiParam(name = "一页的条目数",type = "MybatisPlus提供的Ipage分页中的size参数",required = true)
+                                     @ApiParam(type = "一页的条目数",required = true)
                                         @RequestParam long size){
         IPage<CouponRule> iPage = new Page<>(current,size);
         return couponRuleMapper.selectPage(iPage,null);
@@ -78,9 +78,9 @@ public class CouponRuleController {
     //生成规则与商品的中间表记录
     @ApiOperation(value = "根据传入的优惠券规则id和商品id，生成一条规则实体与商品实体的中间表记录",tags = {"中间表","功能性操作"})
     @PostMapping("/relateProduct")
-    public Response relate(@ApiParam(name = "优惠券规则id",type = "优惠券规则的主键id",required = true)
+    public Response relate(@ApiParam(type = "优惠券规则id",required = true)
                                 @RequestParam long ruleid,
-                         @ApiParam(name = "商品id",type = "主键id",required = true)
+                         @ApiParam(type = "商品id",required = true)
                                 @RequestParam long productid){
         CouponRuleToProduct couponRuleToProduct = new CouponRuleToProduct();
         couponRuleToProduct.setProductId(productid);

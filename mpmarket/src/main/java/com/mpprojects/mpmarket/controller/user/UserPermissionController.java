@@ -24,7 +24,7 @@ public class UserPermissionController {
 
     @ApiOperation(value = "添加一个普通用户的权限记录",tags = "添加")
     @PostMapping("/add")
-    public Response add(@ApiParam(name = "权限名",required = true)
+    public Response add(@ApiParam(type = "权限名",required = true)
                             @RequestParam String name){
         UserPermission userPermission = new UserPermission();
         userPermission.setName(name);
