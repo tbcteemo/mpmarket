@@ -13,3 +13,7 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath*:/com/mpprojects/mpmarket/dao/**/*.xml
+
+server:
+  address: 0.0.0.0
+  port: 8081

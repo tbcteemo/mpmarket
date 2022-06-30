@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.mpprojects</groupId>
     <artifactId>mpmarket</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.5-SNAPSHOT</version>
     <name>mpmarket</name>
     <description>mpmarket</description>
     <properties>
